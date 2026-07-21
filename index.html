@@ -46,13 +46,17 @@
 
     <!-- عناصر تحكم لمسية للموبايل -->
     <div id="mobile-ui">
-        <div style="display: grid; grid-template-columns: repeat(3, 55px); gap: 6px;">
+        <!-- أزرار الحركة اليسرى -->
+        <div class="touch-group" style="display: grid; grid-template-columns: repeat(3, 50px); gap: 5px;">
             <div></div><div class="touch-btn" id="btn-up">▲</div><div></div>
             <div class="touch-btn" id="btn-left">◀</div><div class="touch-btn" id="btn-down">▼</div><div class="touch-btn" id="btn-right">▶</div>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <div class="touch-btn action-btn" id="btn-dash" style="border-color:#00f0ff; color:#00f0ff; font-size:14px;">DASH</div>
-            <div class="touch-btn action-btn" id="btn-ult" style="font-size:14px;">ULT</div>
+
+        <!-- أزرار الهجوم اليمنى -->
+        <div class="touch-group" style="display: flex; gap: 12px; align-items: flex-end;">
+            <div class="touch-btn action-btn" id="btn-dash" style="border-color:#00f0ff; color:#00f0ff;">DASH</div>
+            <div class="touch-btn action-btn" id="btn-ult">ULT</div>
+            <div class="touch-btn shoot-btn" id="btn-shoot">🔥<br>FIRE</div>
         </div>
     </div>
 
