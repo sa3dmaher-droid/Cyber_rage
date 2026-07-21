@@ -70,6 +70,7 @@ const player = {
 
 const keys = { w: false, a: false, s: false, d: false, Shift: false, Space: false };
 const mouse = { x: canvas.width / 2, y: canvas.height / 2, isDown: false };
+let isTouchShooting = false;
 
 let bullets = [], enemies = [], particles = [];
 let boss = null;
@@ -97,10 +98,11 @@ canvas.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.cli
 canvas.addEventListener('mousedown', () => { mouse.isDown = true; });
 canvas.addEventListener('mouseup', () => { mouse.isDown = false; });
 
-// دعم أزرار اللمس
+// دعم أزرار اللمس للموبايل
 function setupTouch() {
     const bindBtn = (id, action) => {
         const el = document.getElementById(id);
+        if(!el) return;
         el.addEventListener('touchstart', (e) => { e.preventDefault(); action(true); });
         el.addEventListener('touchend', (e) => { e.preventDefault(); action(false); });
     };
@@ -110,6 +112,7 @@ function setupTouch() {
     bindBtn('btn-right', v => keys.d = v);
     bindBtn('btn-dash', v => { if(v) triggerDash(); });
     bindBtn('btn-ult', v => { if(v) triggerUltimate(); });
+    bindBtn('btn-shoot', v => { isTouchShooting = v; });
 }
 setupTouch();
 
@@ -180,6 +183,18 @@ function updateHUD() {
     }
 }
 
+// العثور على أقرب عدو للتصويب التلقائي على الموبايل
+function getNearestEnemy() {
+    if (boss) return boss;
+    let nearest = null;
+    let minDist = Infinity;
+    enemies.forEach(e => {
+        const d = Math.hypot(e.x - player.x, e.y - player.y);
+        if (d < minDist) { minDist = d; nearest = e; }
+    });
+    return nearest;
+}
+
 function gameLoop() {
     requestAnimationFrame(gameLoop);
 
@@ -210,13 +225,21 @@ function gameLoop() {
     player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
     player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
 
-    // التوجيه صوب الماوس
-    player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+    // تحديد اتجاه النظرة/التصويب
+    if (isTouchShooting) {
+        const target = getNearestEnemy();
+        if (target) {
+            player.angle = Math.atan2(target.y - player.y, target.x - player.x);
+        }
+    } else if (mouse.isDown || mouse.x !== canvas.width/2) {
+        player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+    }
 
     if (player.dashCooldown > 0) player.dashCooldown--;
 
-    // إطلاق النار مع استمرار الضغط على الماوس
-    if (mouse.isDown && Date.now() - lastShootTime > 130) {
+    // إطلاق النار (ماوس أو زر لمس)
+    const isShooting = mouse.isDown || isTouchShooting;
+    if (isShooting && Date.now() - lastShootTime > 130) {
         bullets.push({
             x: player.x + Math.cos(player.angle) * 20,
             y: player.y + Math.sin(player.angle) * 20,
