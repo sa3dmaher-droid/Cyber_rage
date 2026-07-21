@@ -91,26 +91,33 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 30px; text-align: cen
 /* أزرار التحكم بالموبايل Touch Controls */
 #mobile-ui {
     position: absolute;
-    bottom: 25px; left: 20px; right: 20px;
+    bottom: 25px; left: 15px; right: 15px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     z-index: 10;
+    pointer-events: none;
 }
+
+.touch-group { pointer-events: auto; }
+
 .touch-btn {
-    width: 65px; height: 65px;
+    width: 60px; height: 60px;
     background: rgba(255, 255, 255, 0.08);
     border: 2px solid #00f0ff;
     border-radius: 50%;
     color: #00f0ff;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
     display: flex; justify-content: center; align-items: center;
     backdrop-filter: blur(4px);
     touch-action: manipulation;
 }
 .touch-btn:active { background: rgba(0, 240, 255, 0.4); transform: scale(0.95); }
-.action-btn { width: 75px; height: 75px; border-color: #ff0055; color: #ff0055; }
+
+/* أزرار الأكشن الهجومية */
+.action-btn { width: 65px; height: 65px; border-color: #ff0055; color: #ff0055; font-size: 13px; }
+.shoot-btn { width: 80px; height: 80px; border-color: #00f0ff; color: #00f0ff; font-size: 16px; background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
 
 /* شريط صحة الزعيم Boss Bar */
 #boss-hud {
