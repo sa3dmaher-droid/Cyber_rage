@@ -1,3 +1,9 @@
+// --- كود الإعلانات المباشرة Monetag ---
+function openMonetagAd() {
+    // يفتح الإعلان في تبويب جديد بدون تعطيل تجربة اللعب
+    window.open('https://omg10.com/4/11398767', '_blank');
+}
+
 // --- المحرك الصوتي البرمجي (Web Audio API) ---
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
@@ -364,6 +370,7 @@ function gameLoop() {
 }
 
 function startGame() {
+    openMonetagAd(); // فتح الإعلان المباشر عند بدء اللعبة
     initAudio();
     playSound('click');
     document.getElementById('start-screen').style.display = 'none';
@@ -384,6 +391,7 @@ function gameOver() {
 }
 
 function restartGame() {
+    openMonetagAd(); // فتح الإعلان المباشر عند إعادة اللعب
     playSound('click');
     document.getElementById('game-over-screen').style.display = 'none';
     startGame();
