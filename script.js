@@ -55,6 +55,155 @@ function playSound(type) {
     }
 }
 
+// --- نظام تخزين البيانات، الملف الشخصي، والسكنات (LocalStorage & Skins & Profile) ---
+const SKINS_DATA = {
+    player: [
+        { id: 'p_neon', name: 'نيون سماوي', color: '#00f0ff', icon: '✈️' },
+        { id: 'p_gold', name: 'الذهبي الأسطوري', color: '#ffd700', icon: '👑' },
+        { id: 'p_crimson', name: 'الغضب القرمزي', color: '#ff0055', icon: '🔥' },
+        { id: 'p_emerald', name: 'الشبح الزمردي', color: '#00ff88', icon: '⚡' }
+    ],
+    bullet: [
+        { id: 'b_blue', name: 'ليزر أزرق', color: '#00f0ff' },
+        { id: 'b_plasma', name: 'بلازما حارقة', color: '#ff5500' },
+        { id: 'b_neon', name: 'طاقة نيون', color: '#00ff88' }
+    ],
+    enemy: [
+        { id: 'e_cyber', name: 'سايبر عادي', color: '#ff0055' },
+        { id: 'e_void', name: 'وحش الفراغ', color: '#7000ff' }
+    ],
+    bg: [
+        { id: 'bg_space', name: 'فضاء النيون', color: '#05050d' },
+        { id: 'bg_deep', name: 'سايبر عميق', color: '#0b0214' }
+    ]
+};
+
+let userSkins = JSON.parse(localStorage.getItem('cyber_rage_skins')) || {
+    player: 'p_neon',
+    bullet: 'b_blue',
+    enemy: 'e_cyber',
+    bg: 'bg_space'
+};
+
+let userProfile = JSON.parse(localStorage.getItem('cyber_rage_profile')) || {
+    name: 'الأسطورة',
+    highScore: 0,
+    gamesPlayed: 0,
+    totalKills: 0
+};
+
+let activeSkinTab = 'player';
+
+function saveUserData() {
+    localStorage.setItem('cyber_rage_skins', JSON.stringify(userSkins));
+    localStorage.setItem('cyber_rage_profile', JSON.stringify(userProfile));
+}
+
+function openSkins() {
+    playSound('click');
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('skins-screen').style.display = 'flex';
+    renderSkinsGrid();
+}
+
+function closeSkins() {
+    playSound('click');
+    document.getElementById('skins-screen').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'flex';
+}
+
+function switchSkinTab(tab) {
+    playSound('click');
+    activeSkinTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    renderSkinsGrid();
+}
+
+function renderSkinsGrid() {
+    const container = document.getElementById('skins-container');
+    container.innerHTML = '';
+    const list = SKINS_DATA[activeSkinTab];
+    
+    list.forEach(skin => {
+        const isSelected = userSkins[activeSkinTab] === skin.id;
+        const card = document.createElement('div');
+        card.className = `skin-card ${isSelected ? 'selected' : ''}`;
+        card.onclick = () => {
+            userSkins[activeSkinTab] = skin.id;
+            saveUserData();
+            playSound('click');
+            renderSkinsGrid();
+        };
+        
+        card.innerHTML = `
+            <div class="skin-preview" style="background: ${skin.color || '#333'};">
+                ${skin.icon || '✨'}
+            </div>
+            <div class="skin-name">${skin.name}</div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function openProfile() {
+    playSound('click');
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('profile-screen').style.display = 'flex';
+    updateProfileUI();
+}
+
+function closeProfile() {
+    playSound('click');
+    document.getElementById('profile-screen').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'flex';
+}
+
+function saveProfileName() {
+    const input = document.getElementById('player-name-input');
+    userProfile.name = input.value.trim() || 'الأسطورة';
+    saveUserData();
+}
+
+function updateProfileUI() {
+    document.getElementById('player-name-input').value = userProfile.name;
+    document.getElementById('prof-high-score').innerText = userProfile.highScore;
+    document.getElementById('prof-games-played').innerText = userProfile.gamesPlayed;
+    document.getElementById('prof-total-kills').innerText = userProfile.totalKills;
+    
+    // الألقاب والإنجازات
+    const titlesList = document.getElementById('titles-list');
+    titlesList.innerHTML = '';
+    
+    const titles = [
+        { name: 'مبتدئ الفضاء', unlocked: true, badge: 'مبتدئ' },
+        { name: 'صائد الأعداء', unlocked: userProfile.totalKills >= 50, badge: '50 قتلاً' },
+        { name: 'قاهر المجرات', unlocked: userProfile.highScore >= 1000, badge: '1000 سكور' },
+        { name: 'الأسطورة المطلقة', unlocked: userProfile.highScore >= 3000, badge: '3000 سكور' }
+    ];
+    
+    let currentBadge = 'مبتدئ الفضاء';
+    titles.forEach(t => {
+        if (t.unlocked) currentBadge = t.name;
+        const item = document.createElement('div');
+        item.className = `title-item ${t.unlocked ? 'unlocked' : 'locked'}`;
+        item.innerHTML = `<span>${t.name}</span><span>${t.unlocked ? '✅ متاح' : '❌ مقفل'}</span>`;
+        titlesList.appendChild(item);
+    });
+    
+    document.getElementById('player-title-badge').innerText = currentBadge;
+}
+
+function backToMenu() {
+    playSound('click');
+    isRunning = false;
+    if(enemySpawnInterval) clearInterval(enemySpawnInterval);
+    document.getElementById('game-over-screen').style.display = 'none';
+    document.getElementById('boss-hud').style.display = 'none';
+    document.getElementById('hud').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'flex';
+}
+
 // --- محرك اللعبة الرئيسي ---
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -127,7 +276,8 @@ function triggerDash() {
         player.x += Math.cos(player.angle) * 120;
         player.y += Math.sin(player.angle) * 120;
         player.dashCooldown = 60; // 1 ثانية
-        createParticles(player.x, player.y, '#00f0ff', 15);
+        const pSkin = SKINS_DATA.player.find(s => s.id === userSkins.player) || SKINS_DATA.player[0];
+        createParticles(player.x, player.y, pSkin.color, 15);
         playSound('dash');
     }
 }
@@ -140,10 +290,12 @@ function triggerUltimate() {
         enemies.forEach(enemy => {
             createParticles(enemy.x, enemy.y, '#ff0055', 20);
             score += 20 * combo;
+            userProfile.totalKills++;
         });
         enemies = [];
         if(boss) { boss.hp -= 200; createParticles(boss.x, boss.y, '#ff0055', 40); }
         updateHUD();
+        saveUserData();
     }
 }
 
@@ -155,11 +307,12 @@ function spawnEnemy() {
         const x = player.x + Math.cos(angle) * dist;
         const y = player.y + Math.sin(angle) * dist;
         const isFast = Math.random() > 0.7;
+        const eSkin = SKINS_DATA.enemy.find(s => s.id === userSkins.enemy) || SKINS_DATA.enemy[0];
         enemies.push({
             x, y, radius: isFast ? 12 : 18,
             speed: isFast ? 3.2 : 1.8,
             hp: isFast ? 1 : 3,
-            color: isFast ? '#ff5500' : '#ff0055'
+            color: isFast ? '#ff5500' : eSkin.color
         });
     }
     if (score > 300 && !boss) {
@@ -211,7 +364,8 @@ function gameLoop() {
         screenShake *= 0.9;
     }
 
-    ctx.fillStyle = 'rgba(5, 5, 13, 0.3)';
+    const bgSkin = SKINS_DATA.bg.find(s => s.id === userSkins.bg) || SKINS_DATA.bg[0];
+    ctx.fillStyle = bgSkin.color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     if (!isRunning) { ctx.restore(); return; }
@@ -246,21 +400,23 @@ function gameLoop() {
     // إطلاق النار (ماوس أو زر لمس)
     const isShooting = mouse.isDown || isTouchShooting;
     if (isShooting && Date.now() - lastShootTime > 130) {
+        const bSkin = SKINS_DATA.bullet.find(s => s.id === userSkins.bullet) || SKINS_DATA.bullet[0];
         bullets.push({
             x: player.x + Math.cos(player.angle) * 20,
             y: player.y + Math.sin(player.angle) * 20,
             vx: Math.cos(player.angle) * 12,
-            vy: Math.sin(player.angle) * 12
+            vy: Math.sin(player.angle) * 12,
+            color: bSkin.color
         });
         playSound('shoot');
         lastShootTime = Date.now();
     }
 
     // رسم ورسم حركة الطلقات
-    ctx.fillStyle = '#00f0ff';
     for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
         b.x += b.vx; b.y += b.vy;
+        ctx.fillStyle = b.color;
         ctx.beginPath(); ctx.arc(b.x, b.y, 4, 0, Math.PI*2); ctx.fill();
 
         if (b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) {
@@ -289,6 +445,7 @@ function gameLoop() {
                     playSound('explosion');
                     enemies.splice(i, 1);
                     score += 10 * combo;
+                    userProfile.totalKills++;
                     rage = Math.min(100, rage + 4);
                     comboTimer = 120;
                     updateHUD();
@@ -327,6 +484,7 @@ function gameLoop() {
                     createParticles(boss.x, boss.y, '#ff0055', 50);
                     playSound('ult');
                     score += 500;
+                    userProfile.totalKills += 10;
                     boss = null;
                     document.getElementById('boss-hud').style.display = 'none';
                     updateHUD();
@@ -348,13 +506,13 @@ function gameLoop() {
         if (p.life <= 0) particles.splice(i, 1);
     }
 
-    // رسم اللاعب
+    // رسم اللاعب بالسكن المختار
     ctx.save();
     ctx.translate(player.x, player.y);
     ctx.rotate(player.angle);
 
-    // هيكل اللاعب النيون
-    ctx.fillStyle = '#00f0ff';
+    const pSkin = SKINS_DATA.player.find(s => s.id === userSkins.player) || SKINS_DATA.player[0];
+    ctx.fillStyle = pSkin.color;
     ctx.beginPath();
     ctx.moveTo(20, 0); ctx.lineTo(-12, -12); ctx.lineTo(-6, 0); ctx.lineTo(-12, 12);
     ctx.closePath(); ctx.fill();
@@ -374,6 +532,7 @@ function startGame() {
     initAudio();
     playSound('click');
     document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('hud').style.display = 'flex';
     isRunning = true;
     score = 0; health = 100; rage = 0; combo = 1;
     enemies = []; bullets = []; boss = null;
@@ -386,7 +545,16 @@ function gameOver() {
     isRunning = false;
     if(enemySpawnInterval) clearInterval(enemySpawnInterval);
     playSound('explosion');
+    
+    // تحديث وتخزين أعلى سكور والمباريات
+    userProfile.gamesPlayed++;
+    if (score > userProfile.highScore) {
+        userProfile.highScore = score;
+    }
+    saveUserData();
+
     document.getElementById('final-score').innerText = score;
+    document.getElementById('gameover-highscore').innerText = userProfile.highScore;
     document.getElementById('game-over-screen').style.display = 'flex';
 }
 
