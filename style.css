@@ -7,14 +7,14 @@
     box-sizing: border-box; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     user-select: none; 
-    -webkit-user-select: none; /* حمايةإضافية لمتصفحات Safari/Chrome */
-    -webkit-touch-callout: none; /* منع ظهور قائمة الضغط المطول */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 body, html { 
     width: 100vw; 
     height: 100vh; 
-    height: 100dvh; /* حل مشكلة شريط عنوان الموبايل */
+    height: 100dvh;
     overflow: hidden; 
     background: #05050d; 
     color: #fff; 
@@ -27,7 +27,7 @@ canvas {
     display: block; 
     width: 100%; 
     height: 100%; 
-    touch-action: none; /* منع التمرير وتكبير الشاشة أثناء اللعب */
+    touch-action: none;
 }
 
 /* ==========================================
@@ -63,6 +63,38 @@ canvas {
 #health-fill { background: linear-gradient(90deg, #ff0055, #ff5500); }
 #rage-fill { background: linear-gradient(90deg, #00f0ff, #7000ff); width: 0%; }
 
+/* BOSS HUD */
+#boss-hud {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 10, 25, 0.85);
+    border: 1px solid #ff0055;
+    box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+    padding: 10px 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+#boss-bar-bg {
+    width: 100%; height: 14px; background: #2a0818;
+    border-radius: 7px; overflow: hidden;
+    border: 1px solid rgba(255, 0, 85, 0.4);
+}
+
+#boss-bar-fill {
+    height: 100%; width: 100%;
+    background: linear-gradient(90deg, #ff0055, #ff7700);
+    transition: width 0.2s ease;
+}
+
 /* ==========================================
    MENU OVERLAYS
    ========================================== */
@@ -81,7 +113,7 @@ canvas {
 }
 
 h1.title {
-    font-size: clamp(2.2rem, 5vw, 3.8rem); /* تكيف الخط تلقائياً مع الموبايل */
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
     color: #00f0ff;
     text-shadow: 0 0 20px #00f0ff, 0 0 40px #ff0055;
     letter-spacing: 3px;
@@ -228,7 +260,7 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
     padding: 4px;
     width: 60%;
     outline: none;
-    user-select: text; /* السماح بالكتابة وتحديد اسم اللاعب */
+    user-select: text;
     -webkit-user-select: text;
 }
 
@@ -289,52 +321,20 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
     pointer-events: none;
 }
 
-.touch-group { 
-    pointer-events: auto; 
-    display: flex;
-    gap: 12px;
-    align-items: flex-end;
-}
+.touch-group { pointer-events: auto; }
 
 .touch-btn {
-    width: 60px; height: 60px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 2px solid #00f0ff;
+    width: 50px; height: 50px;
+    background: rgba(10, 10, 30, 0.6);
+    border: 1px solid rgba(0, 240, 255, 0.4);
     border-radius: 50%;
-    color: #00f0ff;
-    font-size: 20px;
-    font-weight: bold;
-    display: flex; justify-content: center; align-items: center;
-    backdrop-filter: blur(4px);
+    color: #fff; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(5px);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
 }
-.touch-btn:active { background: rgba(0, 240, 255, 0.4); transform: scale(0.95); }
+.touch-btn:active { background: rgba(0, 240, 255, 0.4); }
 
-/* أزرار الهجوم للأجهاز اللوحية والموبايل */
-.action-btn { width: 65px; height: 65px; border-color: #ff0055; color: #ff0055; font-size: 13px; }
-.shoot-btn { 
-    width: 80px; height: 80px; 
-    border-color: #00f0ff; 
-    color: #00f0ff; 
-    font-size: 16px; 
-    background: rgba(0, 240, 255, 0.15); 
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); 
-}
-
-/* ==========================================
-   BOSS HEALTH BAR
-   ========================================== */
-#boss-hud {
-    position: absolute;
-    top: 85px; left: 50%;
-    transform: translateX(-50%);
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    z-index: 10;
-    pointer-events: none;
-}
-#boss-bar-bg { width: 300px; max-width: 80vw; height: 16px; background: #200; border: 2px solid #ff0055; border-radius: 8px; overflow: hidden; }
-#boss-bar-fill { width: 100%; height: 100%; background: #ff0055; transition: width 0.1s; }
+.action-btn { width: 55px; height: 55px; font-size: 11px; font-weight: bold; border-color: #ff0055; color: #ff0055; }
+.shoot-btn { width: 70px; height: 70px; font-size: 12px; font-weight: bold; background: rgba(255, 0, 85, 0.3); border-color: #ff0055; }
