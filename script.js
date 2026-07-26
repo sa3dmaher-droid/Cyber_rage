@@ -1,7 +1,11 @@
-// --- كود الإعلانات المباشرة Monetag ---
+// --- كود الإعلانات المباشرة والبوب أندر Monetag ---
 function openMonetagAd() {
     // يفتح الإعلان في تبويب جديد بدون تعطيل تجربة اللعب
-    window.open('https://omg10.com/4/11398767', '_blank');
+    try {
+        window.open('https://omg10.com/4/11398767', '_blank');
+    } catch(e) {
+        console.log("Ad blocked or error opening ad", e);
+    }
 }
 
 // --- المحرك الصوتي البرمجي (Web Audio API) ---
@@ -171,7 +175,6 @@ function updateProfileUI() {
     document.getElementById('prof-games-played').innerText = userProfile.gamesPlayed;
     document.getElementById('prof-total-kills').innerText = userProfile.totalKills;
     
-    // الألقاب والإنجازات
     const titlesList = document.getElementById('titles-list');
     titlesList.innerHTML = '';
     
@@ -275,7 +278,7 @@ function triggerDash() {
     if (player.dashCooldown <= 0) {
         player.x += Math.cos(player.angle) * 120;
         player.y += Math.sin(player.angle) * 120;
-        player.dashCooldown = 60; // 1 ثانية
+        player.dashCooldown = 60;
         const pSkin = SKINS_DATA.player.find(s => s.id === userSkins.player) || SKINS_DATA.player[0];
         createParticles(player.x, player.y, pSkin.color, 15);
         playSound('dash');
@@ -342,7 +345,6 @@ function updateHUD() {
     }
 }
 
-// العثور على أقرب عدو للتصويب التلقائي على الموبايل
 function getNearestEnemy() {
     if (boss) return boss;
     let nearest = null;
@@ -357,7 +359,6 @@ function getNearestEnemy() {
 function gameLoop() {
     requestAnimationFrame(gameLoop);
 
-    // تطبيق اهتزاز الشاشة Screen Shake
     ctx.save();
     if (screenShake > 0) {
         ctx.translate((Math.random()-0.5)*screenShake, (Math.random()-0.5)*screenShake);
@@ -370,7 +371,6 @@ function gameLoop() {
 
     if (!isRunning) { ctx.restore(); return; }
 
-    // حركة اللاعب
     let dx = 0, dy = 0;
     if (keys.w) dy -= 1; if (keys.s) dy += 1;
     if (keys.a) dx -= 1; if (keys.d) dx += 1;
@@ -381,11 +381,9 @@ function gameLoop() {
         player.y += (dy / len) * player.speed;
     }
 
-    // تحديد الحدود
     player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
     player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
 
-    // تحديد اتجاه النظرة/التصويب
     if (isTouchShooting) {
         const target = getNearestEnemy();
         if (target) {
@@ -397,7 +395,6 @@ function gameLoop() {
 
     if (player.dashCooldown > 0) player.dashCooldown--;
 
-    // إطلاق النار (ماوس أو زر لمس)
     const isShooting = mouse.isDown || isTouchShooting;
     if (isShooting && Date.now() - lastShootTime > 130) {
         const bSkin = SKINS_DATA.bullet.find(s => s.id === userSkins.bullet) || SKINS_DATA.bullet[0];
@@ -412,7 +409,6 @@ function gameLoop() {
         lastShootTime = Date.now();
     }
 
-    // رسم ورسم حركة الطلقات
     for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
         b.x += b.vx; b.y += b.vy;
@@ -424,7 +420,6 @@ function gameLoop() {
         }
     }
 
-    // تحريك ورسم الوحوش
     for (let i = enemies.length - 1; i >= 0; i--) {
         const e = enemies[i];
         const angle = Math.atan2(player.y - e.y, player.x - e.x);
@@ -434,7 +429,6 @@ function gameLoop() {
         ctx.fillStyle = e.color;
         ctx.beginPath(); ctx.arc(e.x, e.y, e.radius, 0, Math.PI*2); ctx.fill();
 
-        // تصادم الطلقة مع العدو
         for (let j = bullets.length - 1; j >= 0; j--) {
             const b = bullets[j];
             if (Math.hypot(b.x - e.x, b.y - e.y) < e.radius) {
@@ -454,7 +448,6 @@ function gameLoop() {
             }
         }
 
-        // تصادم العدو مع اللاعب
         if (enemies[i] && Math.hypot(player.x - e.x, player.y - e.y) < player.radius + e.radius) {
             health -= 12;
             screenShake = 10;
@@ -466,7 +459,6 @@ function gameLoop() {
         }
     }
 
-    // التعامل مع الزعيم (Boss Logic)
     if (boss) {
         const angle = Math.atan2(player.y - boss.y, player.x - boss.x);
         boss.x += Math.cos(angle) * boss.speed;
@@ -495,7 +487,6 @@ function gameLoop() {
         }
     }
 
-    // رسم ورسم حركة الجزيئات المتناثرة Particles
     for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx; p.y += p.vy; p.life -= 0.03;
@@ -506,7 +497,6 @@ function gameLoop() {
         if (p.life <= 0) particles.splice(i, 1);
     }
 
-    // رسم اللاعب بالسكن المختار
     ctx.save();
     ctx.translate(player.x, player.y);
     ctx.rotate(player.angle);
@@ -518,7 +508,6 @@ function gameLoop() {
     ctx.closePath(); ctx.fill();
     ctx.restore();
 
-    // عداد الكومبو
     if (comboTimer > 0) {
         comboTimer--;
         if (comboTimer === 0) combo = 1;
@@ -528,7 +517,7 @@ function gameLoop() {
 }
 
 function startGame() {
-    openMonetagAd(); // فتح الإعلان المباشر عند بدء اللعبة
+    openMonetagAd();
     initAudio();
     playSound('click');
     document.getElementById('start-screen').style.display = 'none';
@@ -546,7 +535,6 @@ function gameOver() {
     if(enemySpawnInterval) clearInterval(enemySpawnInterval);
     playSound('explosion');
     
-    // تحديث وتخزين أعلى سكور والمباريات
     userProfile.gamesPlayed++;
     if (score > userProfile.highScore) {
         userProfile.highScore = score;
@@ -559,7 +547,7 @@ function gameOver() {
 }
 
 function restartGame() {
-    openMonetagAd(); // فتح الإعلان المباشر عند إعادة اللعب
+    openMonetagAd();
     playSound('click');
     document.getElementById('game-over-screen').style.display = 'none';
     startGame();
