@@ -1,26 +1,38 @@
+/* ==========================================
+   RESET & GLOBAL STYLES
+   ========================================== */
 * { 
     margin: 0; 
     padding: 0; 
     box-sizing: border-box; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     user-select: none; 
+    -webkit-user-select: none; /* حمايةإضافية لمتصفحات Safari/Chrome */
+    -webkit-touch-callout: none; /* منع ظهور قائمة الضغط المطول */
 }
 
 body, html { 
-    width: 100%; 
-    height: 100%; 
+    width: 100vw; 
+    height: 100vh; 
+    height: 100dvh; /* حل مشكلة شريط عنوان الموبايل */
     overflow: hidden; 
     background: #05050d; 
     color: #fff; 
 }
 
+/* ==========================================
+   CANVAS GAME AREA
+   ========================================== */
 canvas { 
     display: block; 
     width: 100%; 
     height: 100%; 
+    touch-action: none; /* منع التمرير وتكبير الشاشة أثناء اللعب */
 }
 
-/* واجهة المستخدم Top HUD */
+/* ==========================================
+   TOP HUD
+   ========================================== */
 #hud {
     position: absolute;
     top: 15px; left: 15px; right: 15px;
@@ -51,7 +63,9 @@ canvas {
 #health-fill { background: linear-gradient(90deg, #ff0055, #ff5500); }
 #rage-fill { background: linear-gradient(90deg, #00f0ff, #7000ff); width: 0%; }
 
-/* شاشات القوائم Overlay */
+/* ==========================================
+   MENU OVERLAYS
+   ========================================== */
 .overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -67,19 +81,21 @@ canvas {
 }
 
 h1.title {
-    font-size: 3.8rem;
+    font-size: clamp(2.2rem, 5vw, 3.8rem); /* تكيف الخط تلقائياً مع الموبايل */
     color: #00f0ff;
     text-shadow: 0 0 20px #00f0ff, 0 0 40px #ff0055;
     letter-spacing: 3px;
     margin-bottom: 10px;
     text-transform: uppercase;
+    text-align: center;
 }
 
 h2.sub-title {
-    font-size: 2.2rem;
+    font-size: clamp(1.5rem, 3.5vw, 2.2rem);
     color: #00f0ff;
     text-shadow: 0 0 15px #00f0ff;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: center; max-width: 500px; line-height: 1.6; }
@@ -106,6 +122,7 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
     box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
     transition: all 0.3s ease;
     text-align: center;
+    -webkit-tap-highlight-color: transparent;
 }
 .btn:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(255, 0, 85, 0.9); }
 
@@ -115,7 +132,9 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
 }
 .btn-secondary:hover { box-shadow: 0 0 25px rgba(0, 240, 255, 0.8); }
 
-/* أنماط نافذة السكنات Skins Window */
+/* ==========================================
+   SKINS WINDOW
+   ========================================== */
 .skins-tabs {
     display: flex;
     gap: 10px;
@@ -132,6 +151,7 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .tab-btn.active, .tab-btn:hover {
@@ -162,6 +182,7 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
     align-items: center;
     cursor: pointer;
     transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .skin-card:hover { border-color: #00f0ff; transform: translateY(-3px); }
@@ -177,7 +198,9 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
 
 .skin-name { font-size: 0.95rem; font-weight: bold; text-align: center; }
 
-/* أنماط نافذة البروفايل Profile Window */
+/* ==========================================
+   PROFILE WINDOW
+   ========================================== */
 .profile-card {
     background: rgba(15, 15, 35, 0.85);
     border: 1px solid #00f0ff;
@@ -205,6 +228,8 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
     padding: 4px;
     width: 60%;
     outline: none;
+    user-select: text; /* السماح بالكتابة وتحديد اسم اللاعب */
+    -webkit-user-select: text;
 }
 
 .badge {
@@ -251,7 +276,9 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
 .title-item.unlocked { border-right: 3px solid #00ff88; color: #fff; }
 .title-item.locked { opacity: 0.4; }
 
-/* أزرار التحكم بالموبايل Touch Controls */
+/* ==========================================
+   MOBILE TOUCH CONTROLS
+   ========================================== */
 #mobile-ui {
     position: absolute;
     bottom: 25px; left: 15px; right: 15px;
@@ -262,7 +289,12 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
     pointer-events: none;
 }
 
-.touch-group { pointer-events: auto; }
+.touch-group { 
+    pointer-events: auto; 
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
 
 .touch-btn {
     width: 60px; height: 60px;
@@ -275,14 +307,25 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
     display: flex; justify-content: center; align-items: center;
     backdrop-filter: blur(4px);
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
 }
 .touch-btn:active { background: rgba(0, 240, 255, 0.4); transform: scale(0.95); }
 
-/* أزرار الأكشن الهجومية */
+/* أزرار الهجوم للأجهاز اللوحية والموبايل */
 .action-btn { width: 65px; height: 65px; border-color: #ff0055; color: #ff0055; font-size: 13px; }
-.shoot-btn { width: 80px; height: 80px; border-color: #00f0ff; color: #00f0ff; font-size: 16px; background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+.shoot-btn { 
+    width: 80px; height: 80px; 
+    border-color: #00f0ff; 
+    color: #00f0ff; 
+    font-size: 16px; 
+    background: rgba(0, 240, 255, 0.15); 
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); 
+}
 
-/* شريط صحة الزعيم Boss Bar */
+/* ==========================================
+   BOSS HEALTH BAR
+   ========================================== */
 #boss-hud {
     position: absolute;
     top: 85px; left: 50%;
@@ -293,5 +336,5 @@ p.desc { font-size: 1.1rem; color: #a0a0c0; margin-bottom: 25px; text-align: cen
     z-index: 10;
     pointer-events: none;
 }
-#boss-bar-bg { width: 300px; height: 16px; background: #200; border: 2px solid #ff0055; border-radius: 8px; overflow: hidden; }
+#boss-bar-bg { width: 300px; max-width: 80vw; height: 16px; background: #200; border: 2px solid #ff0055; border-radius: 8px; overflow: hidden; }
 #boss-bar-fill { width: 100%; height: 100%; background: #ff0055; transition: width 0.1s; }
