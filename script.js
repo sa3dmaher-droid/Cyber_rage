@@ -1,6 +1,5 @@
 // --- كود الإعلانات المباشرة والبوب أندر Monetag ---
 function openMonetagAd() {
-    // يفتح الإعلان في تبويب جديد بدون تعطيل تجربة اللعب
     try {
         window.open('https://omg10.com/4/11398767', '_blank');
     } catch(e) {
@@ -12,7 +11,10 @@ function openMonetagAd() {
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
 
-function initAudio() { if(!audioCtx) audioCtx = new AudioCtx(); }
+function initAudio() { 
+    if(!audioCtx) audioCtx = new AudioCtx(); 
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+}
 
 function playSound(type) {
     if(!audioCtx) return;
@@ -59,7 +61,7 @@ function playSound(type) {
     }
 }
 
-// --- نظام تخزين البيانات، الملف الشخصي، والسكنات (LocalStorage & Skins & Profile) ---
+// --- نظام تخزين البيانات والسكنات ---
 const SKINS_DATA = {
     player: [
         { id: 'p_neon', name: 'نيون سماوي', color: '#00f0ff', icon: '✈️' },
@@ -116,16 +118,17 @@ function closeSkins() {
     document.getElementById('start-screen').style.display = 'flex';
 }
 
-function switchSkinTab(tab) {
+function switchSkinTab(btn, tab) {
     playSound('click');
     activeSkinTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
     renderSkinsGrid();
 }
 
 function renderSkinsGrid() {
     const container = document.getElementById('skins-container');
+    if (!container) return;
     container.innerHTML = '';
     const list = SKINS_DATA[activeSkinTab];
     
@@ -179,10 +182,10 @@ function updateProfileUI() {
     titlesList.innerHTML = '';
     
     const titles = [
-        { name: 'مبتدئ الفضاء', unlocked: true, badge: 'مبتدئ' },
-        { name: 'صائد الأعداء', unlocked: userProfile.totalKills >= 50, badge: '50 قتلاً' },
-        { name: 'قاهر المجرات', unlocked: userProfile.highScore >= 1000, badge: '1000 سكور' },
-        { name: 'الأسطورة المطلقة', unlocked: userProfile.highScore >= 3000, badge: '3000 سكور' }
+        { name: 'مبتدئ الفضاء', unlocked: true },
+        { name: 'صائد الأعداء', unlocked: userProfile.totalKills >= 50 },
+        { name: 'قاهر المجرات', unlocked: userProfile.highScore >= 1000 },
+        { name: 'الأسطورة المطلقة', unlocked: userProfile.highScore >= 3000 }
     ];
     
     let currentBadge = 'مبتدئ الفضاء';
@@ -223,10 +226,10 @@ let screenShake = 0;
 const player = {
     x: canvas.width / 2, y: canvas.height / 2,
     radius: 18, angle: 0, speed: 4.5,
-    dashCooldown: 0, isShielded: false, shieldTimer: 0
+    dashCooldown: 0
 };
 
-const keys = { w: false, a: false, s: false, d: false, Shift: false, Space: false };
+const keys = { w: false, a: false, s: false, d: false, Shift: false };
 const mouse = { x: canvas.width / 2, y: canvas.height / 2, isDown: false };
 let isTouchShooting = false;
 
@@ -256,7 +259,6 @@ canvas.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.cli
 canvas.addEventListener('mousedown', () => { mouse.isDown = true; });
 canvas.addEventListener('mouseup', () => { mouse.isDown = false; });
 
-// دعم أزرار اللمس للموبايل
 function setupTouch() {
     const bindBtn = (id, action) => {
         const el = document.getElementById(id);
@@ -357,7 +359,7 @@ function getNearestEnemy() {
 }
 
 function gameLoop() {
-    requestAnimationFrame(gameLoop);
+    if (!isRunning) return; // توقف المحرك فوراً إن لم تكن اللعبة قيد التشغيل
 
     ctx.save();
     if (screenShake > 0) {
@@ -368,8 +370,6 @@ function gameLoop() {
     const bgSkin = SKINS_DATA.bg.find(s => s.id === userSkins.bg) || SKINS_DATA.bg[0];
     ctx.fillStyle = bgSkin.color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    if (!isRunning) { ctx.restore(); return; }
 
     let dx = 0, dy = 0;
     if (keys.w) dy -= 1; if (keys.s) dy += 1;
@@ -514,6 +514,7 @@ function gameLoop() {
     }
 
     ctx.restore();
+    requestAnimationFrame(gameLoop);
 }
 
 function startGame() {
@@ -527,6 +528,32 @@ function startGame() {
     enemies = []; bullets = []; boss = null;
     updateHUD();
     if(enemySpawnInterval) clearInterval(enemySpawnInterval);
+    enemySpawnInterval = setInterval(spawnEnemy, 800);
+    requestAnimationFrame(gameLoop);
+}
+
+function gameOver() {
+    isRunning = false;
+    if(enemySpawnInterval) clearInterval(enemySpawnInterval);
+    playSound('explosion');
+    
+    userProfile.gamesPlayed++;
+    if (score > userProfile.highScore) {
+        userProfile.highScore = score;
+    }
+    saveUserData();
+
+    document.getElementById('final-score').innerText = score;
+    document.getElementById('gameover-highscore').innerText = userProfile.highScore;
+    document.getElementById('game-over-screen').style.display = 'flex';
+}
+
+function restartGame() {
+    openMonetagAd();
+    playSound('click');
+    document.getElementById('game-over-screen').style.display = 'none';
+    startGame();
+}pawnInterval) clearInterval(enemySpawnInterval);
     enemySpawnInterval = setInterval(spawnEnemy, 800);
 }
 
@@ -552,5 +579,3 @@ function restartGame() {
     document.getElementById('game-over-screen').style.display = 'none';
     startGame();
 }
-
-gameLoop();
