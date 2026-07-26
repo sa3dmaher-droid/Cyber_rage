@@ -44,7 +44,7 @@
 <body>
 
     <!-- الواجهة العليا HUD -->
-    <div id="hud">
+    <div id="hud" style="display:none;">
         <div class="hud-card">
             <div>النتيجة: <span id="score-text" style="color:#00f0ff; font-weight:bold;">0</span></div>
             <div>الكومبو: <span id="combo-text" style="color:#ff0055; font-weight:bold;">x1</span></div>
@@ -63,24 +63,85 @@
         <div id="boss-bar-bg"><div id="boss-bar-fill"></div></div>
     </div>
 
-    <!-- شاشة البداية -->
+    <!-- الشاشة الرئيسية -->
     <div id="start-screen" class="overlay">
         <h1 class="title">CYBER RAGE</h1>
         <p class="desc">استخدم الأسهم أو حروف WASD للحركة، والماوس للتوجيه وإطلاق النار.<br>اضغط <b>Shift</b> للاندفاع الخاطف (Dash)، و <b>Space</b> لتفعيل الهجوم الخارق (Ultimate)!</p>
-        <button class="btn" onclick="startGame()">ابدأ المعركة 🔥</button>
+        
+        <div class="menu-btn-group">
+            <button class="btn" onclick="startGame()">ابدأ المعركة 🔥</button>
+            <button class="btn btn-secondary" onclick="openSkins()">متجر السكنات 🎨</button>
+            <button class="btn btn-secondary" onclick="openProfile()">الملف الشخصي 👤</button>
+        </div>
+    </div>
+
+    <!-- نافذة السكنات (Skins Modal) -->
+    <div id="skins-screen" class="overlay" style="display: none;">
+        <h2 class="sub-title">🎨 خزانة السكنات الأسطورية</h2>
+        
+        <div class="skins-tabs">
+            <button class="tab-btn active" onclick="switchSkinTab('player')">الطائرة</button>
+            <button class="tab-btn" onclick="switchSkinTab('bullet')">النار/الرصاص</button>
+            <button class="tab-btn" onclick="switchSkinTab('enemy')">الأعداء</button>
+            <button class="tab-btn" onclick="switchSkinTab('bg')">الخلفية</button>
+        </div>
+
+        <div id="skins-container" class="skins-grid">
+            <!-- يتم توليد السكنات ديناميكياً بواسطة JS -->
+        </div>
+
+        <button class="btn btn-secondary" style="margin-top: 20px;" onclick="closeSkins()">العودة للقائمة ↩</button>
+    </div>
+
+    <!-- نافذة الملف الشخصي (Profile Modal) -->
+    <div id="profile-screen" class="overlay" style="display: none;">
+        <h2 class="sub-title">👤 الملف الشخصي للاعب</h2>
+        
+        <div class="profile-card">
+            <div class="profile-header">
+                <input type="text" id="player-name-input" value="الأسطورة" maxlength="15" onchange="saveProfileName()">
+                <div id="player-title-badge" class="badge">مبتدئ الفضاء</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-val" id="prof-high-score">0</span>
+                    <span class="stat-lbl">أعلى سكور</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-val" id="prof-games-played">0</span>
+                    <span class="stat-lbl">المباريات اللعوبة</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-val" id="prof-total-kills">0</span>
+                    <span class="stat-lbl">الأعداء المدمرين</span>
+                </div>
+            </div>
+
+            <h3 style="color: #00f0ff; margin-top: 15px; margin-bottom: 10px;">🏆 الألقاب والإنجازات</h3>
+            <div id="titles-list" class="titles-list">
+                <!-- الألقاب تولد هنا -->
+            </div>
+        </div>
+
+        <button class="btn btn-secondary" style="margin-top: 20px;" onclick="closeProfile()">العودة للقائمة ↩</button>
     </div>
 
     <!-- شاشة الخسارة -->
     <div id="game-over-screen" class="overlay" style="display: none;">
         <h1 class="title" style="color:#ff0055; text-shadow:0 0 20px #ff0055;">انتهت المعركة</h1>
         <p class="desc">النتيجة النهائية: <span id="final-score" style="color:#00f0ff; font-weight:bold;">0</span></p>
-        <button class="btn" onclick="restartGame()">إعادة المحاولة 🔄</button>
+        <p class="desc" style="font-size:0.9rem; margin-top:-15px;">أعلى سكور لك: <span id="gameover-highscore" style="color:#00ff88; font-weight:bold;">0</span></p>
+        <div class="menu-btn-group">
+            <button class="btn" onclick="restartGame()">إعادة المحاولة 🔄</button>
+            <button class="btn btn-secondary" onclick="backToMenu()">القائمة الرئيسية 🏠</button>
+        </div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
     <!-- عناصر تحكم لمسية للموبايل -->
-    <div id="mobile-ui">
+    <div id="mobile-ui" style="display: none;">
         <!-- أزرار الحركة اليسرى -->
         <div class="touch-group" style="display: grid; grid-template-columns: repeat(3, 50px); gap: 5px;">
             <div></div><div class="touch-btn" id="btn-up">▲</div><div></div>
