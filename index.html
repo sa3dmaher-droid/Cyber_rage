@@ -3,72 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cyber Rage - ساايبر ريج</title>
-    <!-- سكربت الإعلانات المباشرة Monetag -->
-    <script src="//omg10.com/4/11398767" data-cfasync="false"></script>
-    <!-- ربط ملف الـ CSS (قم بوضع كود الـ CSS في ملف باسم style.css أو داخل الوسم <style>) -->
+    
+    <!-- Adsterra Ads Codes -->
+    <script src="https://pl30545491.effectivecpmnetwork.com/be/8d/0a/be8d0a71756afc378d00d06ad130247c.js"></script>
+    <script src="https://pl30545492.effectivecpmnetwork.com/54/34/58/543458bb15726e0a59716175af2d337f.js"></script>
+
+    <!-- أكواد إثبات الملكية -->
+    <meta name="clckd" content="dc042788b9fe68fec077f4c39534c323" />
+    <!-- استبدل القيم أدناه بالأكواد الخاصة بك عند توفرها -->
+    <meta name="monetag" content="ضع_كود_monetag_هنا">
+    <meta name="google-site-verification" content="ضع_كود_جوجل_هنا" />
+
+    <!-- SEO & Metadata -->
+    <title>لعبة أكشن أونلاين - Cyber Rage</title>
+    <meta name="description" content="العب لعبة أكشن أونلاين مجاناً وبدون تحميل. Cyber Rage هي لعبة قتال ونيون ممتعة تعمل على الكمبيوتر والموبايل مباشرة عبر المتصفح.">
+    <meta name="keywords" content="لعبة أكشن أونلاين, Cyber Rage, cyber rage game, لعبة سايبر ريج, العاب نيون, العاب متصفح, sa3dmaher">
+    <meta name="author" content="sa3dmaher">
+    
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context" : "https://schema.org",
+      "@type" : "WebSite",
+      "name" : "لعبة أكشن أونلاين",
+      "alternateName": ["Cyber Rage", "CyberRage Game"],
+      "url" : "https://sa3dmaher-droid.github.io/Cyber_rage/"
+    }
+    </script>
+
     <link rel="stylesheet" href="style.css">
+
+    <!-- أيقونة الموقع وملف الـ Manifest -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
 </head>
 <body>
 
-    <!-- لوحة معلومات اللعبة أثناء اللعب (Top HUD) -->
-    <div id="hud" style="display: none;">
+    <!-- الواجهة العليا HUD -->
+    <div id="hud" style="display:none;">
         <div class="hud-card">
-            <div>النقاط: <span id="score-text">0</span></div>
-            <div>الكومبو: <span id="combo-text">x1</span></div>
+            <div>النتيجة: <span id="score-text" style="color:#00f0ff; font-weight:bold;">0</span></div>
+            <div>الكومبو: <span id="combo-text" style="color:#ff0055; font-weight:bold;">x1</span></div>
         </div>
         <div class="hud-card">
-            <div>الصحة</div>
+            <div>الصحة (Health)</div>
             <div class="bar-container"><div id="health-fill" class="bar-fill"></div></div>
-        </div>
-        <div class="hud-card">
-            <div>طاقة الغضب (ULT)</div>
+            <div style="margin-top:6px;">الغضب الخارق (Rage)</div>
             <div class="bar-container"><div id="rage-fill" class="bar-fill"></div></div>
         </div>
     </div>
 
-    <!-- شريط صحة الزعيم (Boss HUD) -->
-    <div id="boss-hud">
-        <div style="color: #ff0055; font-weight: bold; margin-bottom: 4px; font-size: 0.9rem;">⚠️ زعيم المجرة ⚠️</div>
-        <div id="boss-bar-bg">
-            <div id="boss-bar-fill"></div>
-        </div>
+    <!-- شريط صحة الزعيم (تم تمكين display:none إفترضيًا) -->
+    <div id="boss-hud" style="display:none;">
+        <div style="color:#ff0055; font-weight:bold; margin-bottom:4px;">⚠️ الزعيم الأسطوري (BOSS)</div>
+        <div id="boss-bar-bg"><div id="boss-bar-fill"></div></div>
     </div>
 
-    <!-- شاشة القائمة الرئيسية (Start Screen) -->
+    <!-- الشاشة الرئيسية -->
     <div id="start-screen" class="overlay">
-        <h1 class="title">Cyber Rage</h1>
-        <p class="desc">معركة سايبر فضائية ملحمية! قاتل الأعداء، اجمع السكنات وطور مهاراتك لتصبح الأسطورة المطلقة.</p>
+        <h1 class="title">CYBER RAGE</h1>
+        <p class="desc">استخدم الأسهم أو حروف WASD للحركة، والماوس للتوجيه وإطلاق النار.<br>اضغط <b>Shift</b> للاندفاع الخاطف (Dash)، و <b>Space</b> لتفعيل الهجوم الخارق (Ultimate)!</p>
+        
         <div class="menu-btn-group">
-            <button class="btn" onclick="startGame()">بدء اللعبة</button>
-            <button class="btn btn-secondary" onclick="openSkins()">السكنات والمظهر</button>
-            <button class="btn btn-secondary" onclick="openProfile()">الملف الشخصي</button>
+            <button class="btn" onclick="startGame()">ابدأ المعركة 🔥</button>
+            <button class="btn btn-secondary" onclick="openSkins()">متجر السكنات 🎨</button>
+            <button class="btn btn-secondary" onclick="openProfile()">الملف الشخصي 👤</button>
         </div>
     </div>
 
-    <!-- شاشة متجر السكنات (Skins Screen) -->
+    <!-- نافذة السكنات -->
     <div id="skins-screen" class="overlay" style="display: none;">
-        <h2 class="sub-title">تخصيص المظهر والسكنات</h2>
+        <h2 class="sub-title">🎨 خزانة السكنات الأسطورية</h2>
+        
         <div class="skins-tabs">
-            <button class="tab-btn active" onclick="switchSkinTab('player')">اللاعب</button>
-            <button class="tab-btn" onclick="switchSkinTab('bullet')">الطلقات</button>
+            <button class="tab-btn active" onclick="switchSkinTab('player')">الطائرة</button>
+            <button class="tab-btn" onclick="switchSkinTab('bullet')">النار/الرصاص</button>
             <button class="tab-btn" onclick="switchSkinTab('enemy')">الأعداء</button>
             <button class="tab-btn" onclick="switchSkinTab('bg')">الخلفية</button>
         </div>
+
         <div id="skins-container" class="skins-grid">
-            <!-- يتم تعبئتها برمجياً من الـ JavaScript -->
+            <!-- يتم توليد السكنات ديناميكياً بواسطة JS -->
         </div>
-        <button class="btn" style="margin-top: 20px; max-width: 200px;" onclick="closeSkins()">رجوع</button>
+
+        <button class="btn btn-secondary" style="margin-top: 20px;" onclick="closeSkins()">العودة للقائمة ↩</button>
     </div>
 
-    <!-- شاشة الملف الشخصي والإنجازات (Profile Screen) -->
+    <!-- نافذة الملف الشخصي -->
     <div id="profile-screen" class="overlay" style="display: none;">
+        <h2 class="sub-title">👤 الملف الشخصي للاعب</h2>
+        
         <div class="profile-card">
             <div class="profile-header">
-                <input type="text" id="player-name-input" value="الأسطورة" oninput="saveProfileName()" maxlength="15">
+                <input type="text" id="player-name-input" value="الأسطورة" maxlength="15" onchange="saveProfileName()">
                 <div id="player-title-badge" class="badge">مبتدئ الفضاء</div>
             </div>
+
             <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-val" id="prof-high-score">0</span>
+                    <span class="stat-lbl">أعلى سكور</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-val" id="prof-games-played">0</span>
+                    <span class="stat-lbl">المباريات الملعوبة</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-val" id="prof-total-kills">0</span>
+                    <span class="stat-lbl">الأعداء المدمرين</span>
+                </div>
+            </div>
+
+            <h3 style="color: #00f0ff; margin-top: 15px; margin-bottom: 10px;">🏆 الألقاب والإنجازات</h3>
+            <div id="titles-list" class="titles-list">
+                <!-- الألقاب تولد هنا -->
+            </div>
+        </div>
+
+        <button class="btn btn-secondary" style="margin-top: 20px;" onclick="closeProfile()">العودة للقائمة ↩</button>
+    </div>
+
+    <!-- شاشة الخسارة -->
+    <div id="game-over-screen" class="overlay" style="display: none;">
+        <h1 class="title" style="color:#ff0055; text-shadow:0 0 20px #ff0055;">انتهت المعركة</h1>
+        <p class="desc">النتيجة النهائية: <span id="final-score" style="color:#00f0ff; font-weight:bold;">0</span></p>
+        <p class="desc" style="font-size:0.9rem; margin-top:-15px;">أعلى سكور لك: <span id="gameover-highscore" style="color:#00ff88; font-weight:bold;">0</span></p>
+        <div class="menu-btn-group">
+            <button class="btn" onclick="restartGame()">إعادة المحاولة 🔄</button>
+            <button class="btn btn-secondary" onclick="backToMenu()">القائمة الرئيسية 🏠</button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- عناصر تحكم لمسية للموبايل (تم تحويلها لـ button لأداء أفضل) -->
+    <div id="mobile-ui" style="display: none;">
+        <!-- أزرار الحركة اليسرى -->
+        <div class="touch-group" style="display: grid; grid-template-columns: repeat(3, 50px); gap: 5px;">
+            <div></div><button class="touch-btn" id="btn-up">▲</button><div></div>
+            <button class="touch-btn" id="btn-left">◀</button><button class="touch-btn" id="btn-down">▼</button><button class="touch-btn" id="btn-right">▶</button>
+        </div>
+
+        <!-- أزرار الهجوم اليمنى -->
+        <div class="touch-group" style="display: flex; gap: 12px; align-items: flex-end;">
+            <button class="touch-btn action-btn" id="btn-dash" style="border-color:#00f0ff; color:#00f0ff;">DASH</button>
+            <button class="touch-btn action-btn" id="btn-ult">ULT</button>
+            <button class="touch-btn shoot-btn" id="btn-shoot">🔥<br>FIRE</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
                 <div class="stat-box">
                     <span class="stat-val" id="prof-high-score">0</span>
                     <span class="stat-lbl">أعلى سكور</span>
