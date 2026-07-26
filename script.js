@@ -17,47 +17,51 @@ function initAudio() {
 }
 
 function playSound(type) {
-    if(!audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    if(!audioCtx || audioCtx.state !== 'running') return;
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
 
-    const now = audioCtx.currentTime;
+        const now = audioCtx.currentTime;
 
-    if (type === 'click') {
-        osc.frequency.setValueAtTime(600, now);
-        gain.gain.setValueAtTime(0.1, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-        osc.start(now); osc.stop(now + 0.05);
-    } else if (type === 'shoot') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(800, now);
-        osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-        gain.gain.setValueAtTime(0.15, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-        osc.start(now); osc.stop(now + 0.1);
-    } else if (type === 'dash') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(300, now);
-        osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-        osc.start(now); osc.stop(now + 0.15);
-    } else if (type === 'explosion') {
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(30, now + 0.25);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-        osc.start(now); osc.stop(now + 0.25);
-    } else if (type === 'ult') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(200, now);
-        osc.frequency.linearRampToValueAtTime(1200, now + 0.5);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-        osc.start(now); osc.stop(now + 0.5);
+        if (type === 'click') {
+            osc.frequency.setValueAtTime(600, now);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+            osc.start(now); osc.stop(now + 0.05);
+        } else if (type === 'shoot') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now); osc.stop(now + 0.1);
+        } else if (type === 'dash') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.start(now); osc.stop(now + 0.15);
+        } else if (type === 'explosion') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(30, now + 0.25);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+            osc.start(now); osc.stop(now + 0.25);
+        } else if (type === 'ult') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.linearRampToValueAtTime(1200, now + 0.5);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            osc.start(now); osc.stop(now + 0.5);
+        }
+    } catch(e) {
+        console.log("Audio play error:", e);
     }
 }
 
@@ -106,6 +110,7 @@ function saveUserData() {
 }
 
 function openSkins() {
+    initAudio();
     playSound('click');
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('skins-screen').style.display = 'flex';
@@ -122,7 +127,7 @@ function switchSkinTab(btn, tab) {
     playSound('click');
     activeSkinTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if(btn) btn.classList.add('active');
     renderSkinsGrid();
 }
 
@@ -154,6 +159,7 @@ function renderSkinsGrid() {
 }
 
 function openProfile() {
+    initAudio();
     playSound('click');
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('profile-screen').style.display = 'flex';
@@ -207,6 +213,7 @@ function backToMenu() {
     document.getElementById('game-over-screen').style.display = 'none';
     document.getElementById('boss-hud').style.display = 'none';
     document.getElementById('hud').style.display = 'none';
+    document.getElementById('mobile-ui').style.display = 'none';
     document.getElementById('start-screen').style.display = 'flex';
 }
 
@@ -275,6 +282,42 @@ function setupTouch() {
     bindBtn('btn-shoot', v => { isTouchShooting = v; });
 }
 setupTouch();
+
+function startGame() {
+    initAudio();
+    playSound('click');
+    openMonetagAd(); // فتح الإعلان عند بدء اللعبة
+    
+    score = 0; combo = 1; health = 100; rage = 0;
+    bullets = []; enemies = []; particles = []; boss = null;
+    
+    player.x = canvas.width / 2;
+    player.y = canvas.height / 2;
+    
+    userProfile.gamesPlayed++;
+    saveUserData();
+    
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('game-over-screen').style.display = 'none';
+    document.getElementById('hud').style.display = 'flex';
+    
+    // إظهار أزرار اللمس إذا كان الجهاز يعمل باللمس
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        document.getElementById('mobile-ui').style.display = 'flex';
+    }
+    
+    updateHUD();
+    isRunning = true;
+    
+    if(enemySpawnInterval) clearInterval(enemySpawnInterval);
+    enemySpawnInterval = setInterval(spawnEnemy, 1000);
+    
+    requestAnimationFrame(gameLoop);
+}
+
+function restartGame() {
+    startGame();
+}
 
 function triggerDash() {
     if (player.dashCooldown <= 0) {
@@ -358,8 +401,27 @@ function getNearestEnemy() {
     return nearest;
 }
 
+function gameOver() {
+    isRunning = false;
+    if(enemySpawnInterval) clearInterval(enemySpawnInterval);
+    playSound('explosion');
+    
+    if (score > userProfile.highScore) {
+        userProfile.highScore = score;
+    }
+    saveUserData();
+    
+    document.getElementById('final-score').innerText = score;
+    document.getElementById('gameover-highscore').innerText = userProfile.highScore;
+    
+    document.getElementById('hud').style.display = 'none';
+    document.getElementById('boss-hud').style.display = 'none';
+    document.getElementById('mobile-ui').style.display = 'none';
+    document.getElementById('game-over-screen').style.display = 'flex';
+}
+
 function gameLoop() {
-    if (!isRunning) return; // توقف المحرك فوراً إن لم تكن اللعبة قيد التشغيل
+    if (!isRunning) return;
 
     ctx.save();
     if (screenShake > 0) {
@@ -371,6 +433,7 @@ function gameLoop() {
     ctx.fillStyle = bgSkin.color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // تحديث حركة اللاعب
     let dx = 0, dy = 0;
     if (keys.w) dy -= 1; if (keys.s) dy += 1;
     if (keys.a) dx -= 1; if (keys.d) dx += 1;
@@ -384,6 +447,7 @@ function gameLoop() {
     player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
     player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
 
+    // زاوية التوجيه
     if (isTouchShooting) {
         const target = getNearestEnemy();
         if (target) {
@@ -395,6 +459,7 @@ function gameLoop() {
 
     if (player.dashCooldown > 0) player.dashCooldown--;
 
+    // إطلاق النار
     const isShooting = mouse.isDown || isTouchShooting;
     if (isShooting && Date.now() - lastShootTime > 130) {
         const bSkin = SKINS_DATA.bullet.find(s => s.id === userSkins.bullet) || SKINS_DATA.bullet[0];
@@ -409,6 +474,22 @@ function gameLoop() {
         lastShootTime = Date.now();
     }
 
+    // رسم اللاعب
+    const pSkin = SKINS_DATA.player.find(s => s.id === userSkins.player) || SKINS_DATA.player[0];
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.rotate(player.angle);
+    ctx.fillStyle = pSkin.color;
+    ctx.beginPath();
+    ctx.moveTo(20, 0);
+    ctx.lineTo(-12, -12);
+    ctx.lineTo(-6, 0);
+    ctx.lineTo(-12, 12);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // تحديث ورسم الطلقات
     for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
         b.x += b.vx; b.y += b.vy;
@@ -420,6 +501,7 @@ function gameLoop() {
         }
     }
 
+    // تحديث ورسم الأعداء
     for (let i = enemies.length - 1; i >= 0; i--) {
         const e = enemies[i];
         const angle = Math.atan2(player.y - e.y, player.x - e.x);
@@ -429,6 +511,7 @@ function gameLoop() {
         ctx.fillStyle = e.color;
         ctx.beginPath(); ctx.arc(e.x, e.y, e.radius, 0, Math.PI*2); ctx.fill();
 
+        // اصطدام الطلقة بالعدو
         for (let j = bullets.length - 1; j >= 0; j--) {
             const b = bullets[j];
             if (Math.hypot(b.x - e.x, b.y - e.y) < e.radius) {
@@ -448,6 +531,7 @@ function gameLoop() {
             }
         }
 
+        // اصطدام العدو باللاعب
         if (enemies[i] && Math.hypot(player.x - e.x, player.y - e.y) < player.radius + e.radius) {
             health -= 12;
             screenShake = 10;
@@ -459,6 +543,7 @@ function gameLoop() {
         }
     }
 
+    // تحديث ورسم الزعيم
     if (boss) {
         const angle = Math.atan2(player.y - boss.y, player.x - boss.x);
         boss.x += Math.cos(angle) * boss.speed;
@@ -475,107 +560,38 @@ function gameLoop() {
                 if (boss.hp <= 0) {
                     createParticles(boss.x, boss.y, '#ff0055', 50);
                     playSound('ult');
-                    score += 500;
-                    userProfile.totalKills += 10;
+                    score += 200;
                     boss = null;
                     document.getElementById('boss-hud').style.display = 'none';
                     updateHUD();
                     break;
                 }
-                updateHUD();
             }
+        }
+
+        if (boss && Math.hypot(player.x - boss.x, player.y - boss.y) < player.radius + boss.radius) {
+            health -= 35;
+            screenShake = 15;
+            updateHUD();
+            if (health <= 0) gameOver();
         }
     }
 
+    // تحديث وتأثير المؤثرات البصرية (Particles)
     for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
-        p.x += p.vx; p.y += p.vy; p.life -= 0.03;
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = Math.max(0, p.life);
-        ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
-        ctx.globalAlpha = 1;
-        if (p.life <= 0) particles.splice(i, 1);
-    }
-
-    ctx.save();
-    ctx.translate(player.x, player.y);
-    ctx.rotate(player.angle);
-
-    const pSkin = SKINS_DATA.player.find(s => s.id === userSkins.player) || SKINS_DATA.player[0];
-    ctx.fillStyle = pSkin.color;
-    ctx.beginPath();
-    ctx.moveTo(20, 0); ctx.lineTo(-12, -12); ctx.lineTo(-6, 0); ctx.lineTo(-12, 12);
-    ctx.closePath(); ctx.fill();
-    ctx.restore();
-
-    if (comboTimer > 0) {
-        comboTimer--;
-        if (comboTimer === 0) combo = 1;
+        p.x += p.vx; p.y += p.vy;
+        p.life -= 0.03;
+        if (p.life <= 0) {
+            particles.splice(i, 1);
+        } else {
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.life;
+            ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
+            ctx.globalAlpha = 1;
+        }
     }
 
     ctx.restore();
     requestAnimationFrame(gameLoop);
-}
-
-function startGame() {
-    openMonetagAd();
-    initAudio();
-    playSound('click');
-    document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('hud').style.display = 'flex';
-    isRunning = true;
-    score = 0; health = 100; rage = 0; combo = 1;
-    enemies = []; bullets = []; boss = null;
-    updateHUD();
-    if(enemySpawnInterval) clearInterval(enemySpawnInterval);
-    enemySpawnInterval = setInterval(spawnEnemy, 800);
-    requestAnimationFrame(gameLoop);
-}
-
-function gameOver() {
-    isRunning = false;
-    if(enemySpawnInterval) clearInterval(enemySpawnInterval);
-    playSound('explosion');
-    
-    userProfile.gamesPlayed++;
-    if (score > userProfile.highScore) {
-        userProfile.highScore = score;
-    }
-    saveUserData();
-
-    document.getElementById('final-score').innerText = score;
-    document.getElementById('gameover-highscore').innerText = userProfile.highScore;
-    document.getElementById('game-over-screen').style.display = 'flex';
-}
-
-function restartGame() {
-    openMonetagAd();
-    playSound('click');
-    document.getElementById('game-over-screen').style.display = 'none';
-    startGame();
-}pawnInterval) clearInterval(enemySpawnInterval);
-    enemySpawnInterval = setInterval(spawnEnemy, 800);
-}
-
-function gameOver() {
-    isRunning = false;
-    if(enemySpawnInterval) clearInterval(enemySpawnInterval);
-    playSound('explosion');
-    
-    userProfile.gamesPlayed++;
-    if (score > userProfile.highScore) {
-        userProfile.highScore = score;
-    }
-    saveUserData();
-
-    document.getElementById('final-score').innerText = score;
-    document.getElementById('gameover-highscore').innerText = userProfile.highScore;
-    document.getElementById('game-over-screen').style.display = 'flex';
-}
-
-function restartGame() {
-    openMonetagAd();
-    playSound('click');
-    document.getElementById('game-over-screen').style.display = 'none';
-    startGame();
 }
