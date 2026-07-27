@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Adsterra Ads Codes -->
-    <script src="https://pl30545491.effectivecpmnetwork.com/be/8d/0a/be8d0a71756afc378d00d06ad130247c.js"></script>
-    <script src="https://pl30545492.effectivecpmnetwork.com/54/34/58/543458bb15726e0a59716175af2d337f.js"></script>
+    <!-- ==========================================
+         Monetag Ad Tag (استبدل رقم الـ Zone ID الخاص بك)
+         ========================================== -->
+    <script src="https://alwingulla.com/88/tag.min.js" data-zone="ضع_رقم_الـ_Zone_ID_هنا" async data-cfasync="false"></script>
 
-    <!-- أكواد إثبات الملكية -->
-    <meta name="clckd" content="dc042788b9fe68fec077f4c39534c323" />
-    <meta name="monetag" content="ضع_كود_monetag_هنا">
+    <!-- أكواد إثبات الملكية و SEO -->
     <meta name="google-site-verification" content="ضع_كود_جوجل_هنا" />
-
-    <!-- SEO & Metadata -->
     <title>لعبة أكشن أونلاين - Cyber Rage</title>
     <meta name="description" content="العب لعبة أكشن أونلاين مجاناً وبدون تحميل. Cyber Rage هي لعبة قتال ونيون ممتعة تعمل على الكمبيوتر والموبايل مباشرة عبر المتصفح.">
     <meta name="keywords" content="لعبة أكشن أونلاين, Cyber Rage, cyber rage game, لعبة سايبر ريج, العاب نيون, العاب متصفح, sa3dmaher">
@@ -39,7 +36,7 @@
 </head>
 <body>
 
-    <!-- الواجهة العليا اللعب HUD -->
+    <!-- الواجهة العليا HUD -->
     <div id="hud" style="display:none;">
         <div class="hud-card">
             <div>النتيجة: <span id="score-text" style="color:#00f0ff; font-weight:bold;">0</span></div>
@@ -59,27 +56,24 @@
         <div id="boss-bar-bg"><div id="boss-bar-fill"></div></div>
     </div>
 
-    <!-- الشاشة الرئيسية المضيئة والمتحركة (مطابقة للصورة) -->
+    <!-- الشاشة الرئيسية المضيئة والمتحركة -->
     <div id="start-screen" class="overlay full-cyber-screen">
         
-        <!-- طبقة وميض أنوار المدينة -->
+        <!-- طبقات الإضاءة والمدينة الحية -->
         <div class="city-lights-overlay"></div>
-        
-        <!-- حركة الشخصية المتحركة -->
         <div class="animated-character"></div>
         
         <!-- طائرات الدرون مع إطلاق الليزر -->
         <div class="drone drone-1"><div class="laser-beam"></div></div>
         <div class="drone drone-2"><div class="laser-beam"></div></div>
-        <div class="drone drone-3"><div class="laser-beam"></div></div>
 
-        <!-- 1. شريط الطاقة أعلى اليسار -->
+        <!-- 1. شريط طاقة أعلى اليسار -->
         <div class="top-left-hud">
             <div class="fist-icon">👊</div>
             <div class="top-energy-bar"><div class="energy-fill"></div></div>
         </div>
 
-        <!-- 2. القائمة الجانبية (PLAYER PROFILE & NEWS) -->
+        <!-- 2. كروت الملف الشخصي والأخبار -->
         <div class="left-panel">
             <div class="cyber-box profile-box">
                 <h3 class="box-title">PLAYER PROFILE</h3>
@@ -101,28 +95,29 @@
                 </div>
             </div>
 
-            <div class="cyber-box news-box" onclick="openProfile()">
+            <div class="cyber-box news-box" onclick="openProfile()" style="cursor:pointer;">
                 <h3 class="box-title">NEWS & UPDATES</h3>
                 <p class="news-txt">تم إطلاق الموسم الجديد! اضغط للوصول لقائمة الملف الشخصي الكاملة.</p>
             </div>
         </div>
 
-        <!-- 3. الشعار في المنتصف -->
-        <div class="cyber-logo-title">
-            CYBER<br><span>RAGE</span>
-        </div>
+        <!-- 3. الشعار والأزرار الرئيسية -->
+        <div class="center-bottom-layout">
+            <div class="cyber-logo-title">
+                CYBER<br><span>RAGE</span>
+            </div>
 
-        <!-- 4. الأزرار السفلى (الأسكنات يساراً وبدء المعركة يميناً) -->
-        <div class="bottom-buttons-container">
-            <button class="cyber-btn skins-btn" onclick="openSkins()">
-                <div class="arabic-lbl">الأسكنات</div>
-                <div class="english-lbl">SKINS</div>
-            </button>
+            <div class="cyber-main-buttons">
+                <button class="cyber-btn skins-btn" onclick="openSkins()">
+                    <div class="arabic-lbl">الأسكنات</div>
+                    <div class="english-lbl">SKINS</div>
+                </button>
 
-            <button class="cyber-btn battle-btn" onclick="startGame()">
-                <div class="arabic-lbl">بدء المعركة</div>
-                <div class="english-lbl">BATTLE</div>
-            </button>
+                <button class="cyber-btn battle-btn" onclick="startGame()">
+                    <div class="arabic-lbl">بدء المعركة</div>
+                    <div class="english-lbl">BATTLE</div>
+                </button>
+            </div>
         </div>
 
     </div>
@@ -139,7 +134,7 @@
         </div>
 
         <div id="skins-container" class="skins-grid">
-            <!-- عناصر السكنات تظهر هنا -->
+            <!-- يتم توليد السكنات ديناميكياً بواسطة JS -->
         </div>
 
         <button class="btn btn-secondary" style="margin-top: 20px;" onclick="closeSkins()">العودة للقائمة ↩</button>
