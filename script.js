@@ -107,6 +107,22 @@ let activeSkinTab = 'player';
 function saveUserData() {
     localStorage.setItem('cyber_rage_skins', JSON.stringify(userSkins));
     localStorage.setItem('cyber_rage_profile', JSON.stringify(userProfile));
+    syncStartScreenHUD();
+}
+
+function syncStartScreenHUD() {
+    const nameEl = document.getElementById('menu-player-name');
+    const scoreEl = document.getElementById('menu-high-score');
+    const rankEl = document.getElementById('menu-player-rank');
+    if(nameEl) nameEl.innerText = userProfile.name || 'الأسطورة';
+    if(scoreEl) scoreEl.innerText = userProfile.highScore || 0;
+    
+    let rank = 'مبتدئ';
+    if(userProfile.highScore >= 3000) rank = 'الأسطورة';
+    else if(userProfile.highScore >= 1000) rank = 'قاهر المجرات';
+    else if(userProfile.totalKills >= 50) rank = 'صائد الأعداء';
+    
+    if(rankEl) rankEl.innerText = rank;
 }
 
 function openSkins() {
@@ -215,6 +231,7 @@ function backToMenu() {
     document.getElementById('hud').style.display = 'none';
     document.getElementById('mobile-ui').style.display = 'none';
     document.getElementById('start-screen').style.display = 'flex';
+    syncStartScreenHUD();
 }
 
 // --- محرك اللعبة الرئيسي ---
@@ -286,7 +303,7 @@ setupTouch();
 function startGame() {
     initAudio();
     playSound('click');
-    openMonetagAd(); // فتح الإعلان عند بدء اللعبة
+    openMonetagAd();
     
     score = 0; combo = 1; health = 100; rage = 0;
     bullets = []; enemies = []; particles = []; boss = null;
@@ -301,7 +318,6 @@ function startGame() {
     document.getElementById('game-over-screen').style.display = 'none';
     document.getElementById('hud').style.display = 'flex';
     
-    // إظهار أزرار اللمس إذا كان الجهاز يعمل باللمس
     if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
         document.getElementById('mobile-ui').style.display = 'flex';
     }
@@ -433,7 +449,6 @@ function gameLoop() {
     ctx.fillStyle = bgSkin.color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // تحديث حركة اللاعب
     let dx = 0, dy = 0;
     if (keys.w) dy -= 1; if (keys.s) dy += 1;
     if (keys.a) dx -= 1; if (keys.d) dx += 1;
@@ -447,7 +462,6 @@ function gameLoop() {
     player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
     player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
 
-    // زاوية التوجيه
     if (isTouchShooting) {
         const target = getNearestEnemy();
         if (target) {
@@ -459,7 +473,6 @@ function gameLoop() {
 
     if (player.dashCooldown > 0) player.dashCooldown--;
 
-    // إطلاق النار
     const isShooting = mouse.isDown || isTouchShooting;
     if (isShooting && Date.now() - lastShootTime > 130) {
         const bSkin = SKINS_DATA.bullet.find(s => s.id === userSkins.bullet) || SKINS_DATA.bullet[0];
@@ -474,7 +487,6 @@ function gameLoop() {
         lastShootTime = Date.now();
     }
 
-    // رسم اللاعب
     const pSkin = SKINS_DATA.player.find(s => s.id === userSkins.player) || SKINS_DATA.player[0];
     ctx.save();
     ctx.translate(player.x, player.y);
@@ -489,7 +501,6 @@ function gameLoop() {
     ctx.fill();
     ctx.restore();
 
-    // تحديث ورسم الطلقات
     for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
         b.x += b.vx; b.y += b.vy;
@@ -501,7 +512,6 @@ function gameLoop() {
         }
     }
 
-    // تحديث ورسم الأعداء
     for (let i = enemies.length - 1; i >= 0; i--) {
         const e = enemies[i];
         const angle = Math.atan2(player.y - e.y, player.x - e.x);
@@ -511,7 +521,6 @@ function gameLoop() {
         ctx.fillStyle = e.color;
         ctx.beginPath(); ctx.arc(e.x, e.y, e.radius, 0, Math.PI*2); ctx.fill();
 
-        // اصطدام الطلقة بالعدو
         for (let j = bullets.length - 1; j >= 0; j--) {
             const b = bullets[j];
             if (Math.hypot(b.x - e.x, b.y - e.y) < e.radius) {
@@ -531,7 +540,6 @@ function gameLoop() {
             }
         }
 
-        // اصطدام العدو باللاعب
         if (enemies[i] && Math.hypot(player.x - e.x, player.y - e.y) < player.radius + e.radius) {
             health -= 12;
             screenShake = 10;
@@ -543,7 +551,6 @@ function gameLoop() {
         }
     }
 
-    // تحديث ورسم الزعيم
     if (boss) {
         const angle = Math.atan2(player.y - boss.y, player.x - boss.x);
         boss.x += Math.cos(angle) * boss.speed;
@@ -577,7 +584,6 @@ function gameLoop() {
         }
     }
 
-    // تحديث وتأثير المؤثرات البصرية (Particles)
     for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx; p.y += p.vy;
@@ -595,3 +601,6 @@ function gameLoop() {
     ctx.restore();
     requestAnimationFrame(gameLoop);
 }
+
+// مزامنة بيانات الواجهة فور التشغيل
+syncStartScreenHUD();
