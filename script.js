@@ -602,5 +602,5 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// مزامنة بيانات الواجهة فور التشغيل
+// مزامنة البيانات عند التشغيل
 syncStartScreenHUD();
