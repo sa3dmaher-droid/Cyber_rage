@@ -68,18 +68,18 @@ function playSound(type) {
 // --- نظام تخزين البيانات والسكنات ---
 const SKINS_DATA = {
     player: [
-        { id: 'p_neon', name: 'نيون سماوي', color: '#00f0ff', icon: '✈️' },
-        { id: 'p_gold', name: 'الذهبي الأسطوري', color: '#ffd700', icon: '👑' },
-        { id: 'p_crimson', name: 'الغضب القرمزي', color: '#ff0055', icon: '🔥' },
-        { id: 'p_emerald', name: 'الشبح الزمردي', color: '#00ff88', icon: '⚡' }
+        { id: 'p_jet', name: 'طائرة حربية', color: '#00f0ff', icon: '🛩️' },
+        { id: 'p_ship', name: 'مركبة أسطورية', color: '#ffd700', icon: '🚀' },
+        { id: 'p_heli', name: 'هيليكوبتر القتال', color: '#00ff88', icon: '🚁' },
+        { id: 'p_rocket', name: 'صاروخ النيون', color: '#ff0055', icon: '🚀' }
     ],
     bullet: [
-        { id: 'b_blue', name: 'ليزر أزرق', color: '#00f0ff' },
+        { id: 'b_blue', name: 'ليزر أزرق أسطوري', color: '#00f0ff' },
         { id: 'b_plasma', name: 'بلازما حارقة', color: '#ff5500' },
-        { id: 'b_neon', name: 'طاقة نيون', color: '#00ff88' }
+        { id: 'b_neon', name: 'شعاع النيون', color: '#00ff88' }
     ],
     enemy: [
-        { id: 'e_cyber', name: 'سايبر عادي', color: '#ff0055' },
+        { id: 'e_alien', name: 'فضائي شرير', color: '#ff0055' },
         { id: 'e_void', name: 'وحش الفراغ', color: '#7000ff' }
     ],
     bg: [
@@ -89,9 +89,9 @@ const SKINS_DATA = {
 };
 
 let userSkins = JSON.parse(localStorage.getItem('cyber_rage_skins')) || {
-    player: 'p_neon',
+    player: 'p_jet',
     bullet: 'b_blue',
-    enemy: 'e_cyber',
+    enemy: 'e_alien',
     bg: 'bg_space'
 };
 
@@ -103,6 +103,7 @@ let userProfile = JSON.parse(localStorage.getItem('cyber_rage_profile')) || {
 };
 
 let activeSkinTab = 'player';
+let animationFrameCounter = 0;
 
 function saveUserData() {
     localStorage.setItem('cyber_rage_skins', JSON.stringify(userSkins));
@@ -249,7 +250,7 @@ let screenShake = 0;
 
 const player = {
     x: canvas.width / 2, y: canvas.height / 2,
-    radius: 18, angle: 0, speed: 4.5,
+    radius: 22, angle: 0, speed: 4.5,
     dashCooldown: 0
 };
 
@@ -341,7 +342,7 @@ function triggerDash() {
         player.y += Math.sin(player.angle) * 120;
         player.dashCooldown = 60;
         const pSkin = SKINS_DATA.player.find(s => s.id === userSkins.player) || SKINS_DATA.player[0];
-        createParticles(player.x, player.y, pSkin.color, 15);
+        createParticles(player.x, player.y, pSkin.color, 20);
         playSound('dash');
     }
 }
@@ -349,15 +350,15 @@ function triggerDash() {
 function triggerUltimate() {
     if (rage >= 100) {
         rage = 0;
-        screenShake = 20;
+        screenShake = 25;
         playSound('ult');
         enemies.forEach(enemy => {
-            createParticles(enemy.x, enemy.y, '#ff0055', 20);
+            createParticles(enemy.x, enemy.y, '#ff0055', 25);
             score += 20 * combo;
             userProfile.totalKills++;
         });
         enemies = [];
-        if(boss) { boss.hp -= 200; createParticles(boss.x, boss.y, '#ff0055', 40); }
+        if(boss) { boss.hp -= 250; createParticles(boss.x, boss.y, '#ff0055', 50); }
         updateHUD();
         saveUserData();
     }
@@ -373,14 +374,16 @@ function spawnEnemy() {
         const isFast = Math.random() > 0.7;
         const eSkin = SKINS_DATA.enemy.find(s => s.id === userSkins.enemy) || SKINS_DATA.enemy[0];
         enemies.push({
-            x, y, radius: isFast ? 12 : 18,
+            x, y, radius: isFast ? 16 : 22,
             speed: isFast ? 3.2 : 1.8,
             hp: isFast ? 1 : 3,
-            color: isFast ? '#ff5500' : eSkin.color
+            color: isFast ? '#ff5500' : eSkin.color,
+            skinId: userSkins.enemy,
+            isFast: isFast
         });
     }
     if (score > 300 && !boss) {
-        boss = { x: canvas.width/2, y: -100, radius: 45, hp: 500, maxHp: 500, speed: 1 };
+        boss = { x: canvas.width/2, y: -100, radius: 55, hp: 600, maxHp: 600, speed: 1 };
         document.getElementById('boss-hud').style.display = 'flex';
     }
 }
@@ -436,8 +439,295 @@ function gameOver() {
     document.getElementById('game-over-screen').style.display = 'flex';
 }
 
+/* ==========================================
+   دوال رسم الفيكتور والسكنات المتطورة
+   ========================================== */
+
+// 1. رسم سفينة/طائرة اللاعب
+function drawPlayer(ctx, player) {
+    const skinId = userSkins.player;
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.rotate(player.angle);
+
+    if (skinId === 'p_jet') {
+        // طائرة حربية سوداء/نيون
+        ctx.fillStyle = '#0a192f';
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 2.5;
+
+        // الأجنحة والهيكل
+        ctx.beginPath();
+        ctx.moveTo(25, 0);
+        ctx.lineTo(-10, -22);
+        ctx.lineTo(-4, -8);
+        ctx.lineTo(-18, -12);
+        ctx.lineTo(-12, 0);
+        ctx.lineTo(-18, 12);
+        ctx.lineTo(-4, 8);
+        ctx.lineTo(-10, 22);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // محرك اللهب الخلفي
+        ctx.fillStyle = '#ff0055';
+        ctx.beginPath();
+        ctx.arc(-14, 0, 4 + Math.sin(animationFrameCounter * 0.3) * 2, 0, Math.PI * 2);
+        ctx.fill();
+
+    } else if (skinId === 'p_heli') {
+        // هيلوكوبتر قتالية مع مراوح تدور
+        ctx.fillStyle = '#112233';
+        ctx.strokeStyle = '#00ff88';
+        ctx.lineWidth = 2;
+
+        // الجسم
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 20, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // الذيل
+        ctx.beginPath();
+        ctx.moveTo(-18, 0);
+        ctx.lineTo(-28, -2);
+        ctx.lineTo(-28, 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // المروحة الدوارة
+        ctx.strokeStyle = 'rgba(0, 255, 136, 0.8)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        const propAngle = animationFrameCounter * 0.4;
+        ctx.moveTo(Math.cos(propAngle)*22, Math.sin(propAngle)*22);
+        ctx.lineTo(-Math.cos(propAngle)*22, -Math.sin(propAngle)*22);
+        ctx.stroke();
+
+    } else if (skinId === 'p_rocket') {
+        // صاروخ نيون هجومي
+        ctx.fillStyle = '#ff0055';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.moveTo(24, 0);
+        ctx.lineTo(5, -10);
+        ctx.lineTo(-15, -12);
+        ctx.lineTo(-12, 0);
+        ctx.lineTo(-15, 12);
+        ctx.lineTo(5, 10);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // نار الصاروخ
+        ctx.fillStyle = '#ffbb00';
+        ctx.beginPath();
+        ctx.moveTo(-13, -5);
+        ctx.lineTo(-25 - Math.random() * 8, 0);
+        ctx.lineTo(-13, 5);
+        ctx.fill();
+
+    } else {
+        // مركبة فضاء أسطورية (p_ship)
+        ctx.fillStyle = '#1e0034';
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+        ctx.moveTo(28, 0);
+        ctx.lineTo(-8, -20);
+        ctx.lineTo(0, -6);
+        ctx.lineTo(-16, -6);
+        ctx.lineTo(-20, 0);
+        ctx.lineTo(-16, 6);
+        ctx.lineTo(0, 6);
+        ctx.lineTo(-8, 20);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // جوهرة الطاقة الفضائية
+        ctx.fillStyle = '#00f0ff';
+        ctx.beginPath();
+        ctx.arc(2, 0, 5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.restore();
+}
+
+// 2. رسم الرصاص والأشعة الأسطورية
+function drawBullet(ctx, b) {
+    const skinId = userSkins.bullet;
+    ctx.save();
+
+    if (skinId === 'b_plasma') {
+        // بلازما حارقة دائرية بحلقة طاقة
+        ctx.fillStyle = '#ff5500';
+        ctx.shadowColor = '#ff2200';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#ffff00';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, 9, 0, Math.PI * 2);
+        ctx.stroke();
+
+    } else if (skinId === 'b_neon') {
+        // أشعة نيون خضراء مزدوجة
+        ctx.fillStyle = '#00ff88';
+        ctx.shadowColor = '#00ff88';
+        ctx.shadowBlur = 8;
+        ctx.fillRect(b.x - 6, b.y - 2, 12, 4);
+
+    } else {
+        // ليزر أزرق أسطوري مستطيل متوهج (b_blue)
+        const angle = Math.atan2(b.vy, b.vx);
+        ctx.translate(b.x, b.y);
+        ctx.rotate(angle);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 12;
+        ctx.fillRect(-10, -2.5, 20, 5);
+
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-12, -3.5, 24, 7);
+    }
+
+    ctx.restore();
+}
+
+// 3. رسم الأعداء الفضائيين الأشرار
+function drawEnemy(ctx, e) {
+    ctx.save();
+    ctx.translate(e.x, e.y);
+
+    const isVoid = e.skinId === 'e_void';
+    const mainColor = e.color || (isVoid ? '#7000ff' : '#ff0055');
+
+    // تدوير بسيط لجسم الكائن
+    const pulse = Math.sin(animationFrameCounter * 0.1) * 2;
+
+    if (isVoid) {
+        // وحش الفراغ الفضائي المظلم والأشواك
+        ctx.fillStyle = '#110022';
+        ctx.strokeStyle = mainColor;
+        ctx.lineWidth = 2.5;
+
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI) / 3;
+            const r = (e.radius + pulse) * (i % 2 === 0 ? 1.2 : 0.7);
+            const x = Math.cos(angle) * r;
+            const y = Math.sin(angle) * r;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // العين الشريرة الوسطى
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.arc(0, 0, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+    } else {
+        // كائن فضائي شرير بمخالب وأعين متوهجة
+        ctx.fillStyle = '#220011';
+        ctx.strokeStyle = mainColor;
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.arc(0, 0, e.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // أرجل / قرون فضائية شريرة
+        ctx.strokeStyle = '#ff0055';
+        for (let i = 0; i < 4; i++) {
+            const angle = (i * Math.PI) / 2 + (animationFrameCounter * 0.05);
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(angle) * e.radius, Math.sin(angle) * e.radius);
+            ctx.lineTo(Math.cos(angle) * (e.radius + 8), Math.sin(angle) * (e.radius + 8));
+            ctx.stroke();
+        }
+
+        // أعين متوهجة
+        ctx.fillStyle = '#ffff00';
+        ctx.beginPath();
+        ctx.arc(-5, -3, 3, 0, Math.PI * 2);
+        ctx.arc(5, -3, 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.restore();
+}
+
+// 4. رسم الزعيم الفضائي الشرير (Evil Boss)
+function drawBoss(ctx, boss) {
+    ctx.save();
+    ctx.translate(boss.x, boss.y);
+
+    const pulse = Math.sin(animationFrameCounter * 0.08) * 4;
+
+    // سفينة الأم الشريرة للزعيم
+    ctx.fillStyle = '#15002a';
+    ctx.strokeStyle = '#ff0055';
+    ctx.lineWidth = 4;
+    ctx.shadowColor = '#ff0055';
+    ctx.shadowBlur = 20;
+
+    // شكل مضلع مدبب ضخم
+    ctx.beginPath();
+    ctx.moveTo(0, -boss.radius - 10 - pulse);
+    ctx.lineTo(boss.radius + 15, -boss.radius / 2);
+    ctx.lineTo(boss.radius + 5, boss.radius / 2);
+    ctx.lineTo(0, boss.radius + 15 + pulse);
+    ctx.lineTo(-boss.radius - 5, boss.radius / 2);
+    ctx.lineTo(-boss.radius - 15, -boss.radius / 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // النواة الشريرة في المنتصف
+    ctx.fillStyle = '#ff0055';
+    ctx.beginPath();
+    ctx.arc(0, 0, 18 + pulse, 0, Math.PI * 2);
+    ctx.fill();
+
+    // أسطوانة أضواء الحماية حول النواة
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, 28, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // أعين حمراء شريرة متعددة للزعيم
+    ctx.fillStyle = '#ffea00';
+    ctx.beginPath();
+    ctx.arc(-22, -15, 5, 0, Math.PI * 2);
+    ctx.arc(22, -15, 5, 0, Math.PI * 2);
+    ctx.arc(-12, 20, 4, 0, Math.PI * 2);
+    ctx.arc(12, 20, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
 function gameLoop() {
     if (!isRunning) return;
+    animationFrameCounter++;
 
     ctx.save();
     if (screenShake > 0) {
@@ -495,39 +785,28 @@ function gameLoop() {
         lastShootTime = Date.now();
     }
 
-    const pSkin = SKINS_DATA.player.find(s => s.id === userSkins.player) || SKINS_DATA.player[0];
-    ctx.save();
-    ctx.translate(player.x, player.y);
-    ctx.rotate(player.angle);
-    ctx.fillStyle = pSkin.color;
-    ctx.beginPath();
-    ctx.moveTo(20, 0);
-    ctx.lineTo(-12, -12);
-    ctx.lineTo(-6, 0);
-    ctx.lineTo(-12, 12);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
+    // رسم اللاعب بفرشاة الفيكتور الجديدة
+    drawPlayer(ctx, player);
 
+    // رسم وتحريك الرصاص
     for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
         b.x += b.vx; b.y += b.vy;
-        ctx.fillStyle = b.color;
-        ctx.beginPath(); ctx.arc(b.x, b.y, 4, 0, Math.PI*2); ctx.fill();
+        drawBullet(ctx, b);
 
         if (b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) {
             bullets.splice(i, 1);
         }
     }
 
+    // رسم وتحريك الأعداء
     for (let i = enemies.length - 1; i >= 0; i--) {
         const e = enemies[i];
         const angle = Math.atan2(player.y - e.y, player.x - e.x);
         e.x += Math.cos(angle) * e.speed;
         e.y += Math.sin(angle) * e.speed;
 
-        ctx.fillStyle = e.color;
-        ctx.beginPath(); ctx.arc(e.x, e.y, e.radius, 0, Math.PI*2); ctx.fill();
+        drawEnemy(ctx, e);
 
         for (let j = bullets.length - 1; j >= 0; j--) {
             const b = bullets[j];
@@ -535,7 +814,7 @@ function gameLoop() {
                 e.hp--;
                 bullets.splice(j, 1);
                 if (e.hp <= 0) {
-                    createParticles(e.x, e.y, e.color, 10);
+                    createParticles(e.x, e.y, e.color, 12);
                     playSound('explosion');
                     enemies.splice(i, 1);
                     combo++;
@@ -560,13 +839,13 @@ function gameLoop() {
         }
     }
 
+    // رسم وتحريك الزعيم الفضائي
     if (boss) {
         const angle = Math.atan2(player.y - boss.y, player.x - boss.x);
         boss.x += Math.cos(angle) * boss.speed;
         boss.y += Math.sin(angle) * boss.speed;
 
-        ctx.fillStyle = '#7000ff';
-        ctx.beginPath(); ctx.arc(boss.x, boss.y, boss.radius, 0, Math.PI*2); ctx.fill();
+        drawBoss(ctx, boss);
 
         for (let j = bullets.length - 1; j >= 0; j--) {
             const b = bullets[j];
@@ -594,6 +873,7 @@ function gameLoop() {
         }
     }
 
+    // الجسيمات والتأثيرات النارية
     for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx; p.y += p.vy;
