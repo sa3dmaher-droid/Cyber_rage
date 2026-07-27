@@ -39,7 +39,7 @@
 </head>
 <body>
 
-    <!-- الواجهة العليا HUD -->
+    <!-- الواجهة العليا اللعب HUD -->
     <div id="hud" style="display:none;">
         <div class="hud-card">
             <div>النتيجة: <span id="score-text" style="color:#00f0ff; font-weight:bold;">0</span></div>
@@ -59,24 +59,27 @@
         <div id="boss-bar-bg"><div id="boss-bar-fill"></div></div>
     </div>
 
-    <!-- الشاشة الرئيسية المضيئة والمتحركة -->
+    <!-- الشاشة الرئيسية المضيئة والمتحركة (مطابقة للصورة) -->
     <div id="start-screen" class="overlay full-cyber-screen">
         
-        <!-- طبقات الإضاءة والمدينة الحية -->
+        <!-- طبقة وميض أنوار المدينة -->
         <div class="city-lights-overlay"></div>
+        
+        <!-- حركة الشخصية المتحركة -->
         <div class="animated-character"></div>
         
         <!-- طائرات الدرون مع إطلاق الليزر -->
         <div class="drone drone-1"><div class="laser-beam"></div></div>
         <div class="drone drone-2"><div class="laser-beam"></div></div>
+        <div class="drone drone-3"><div class="laser-beam"></div></div>
 
-        <!-- 1. شريط طاقة أعلى اليسار -->
+        <!-- 1. شريط الطاقة أعلى اليسار -->
         <div class="top-left-hud">
             <div class="fist-icon">👊</div>
             <div class="top-energy-bar"><div class="energy-fill"></div></div>
         </div>
 
-        <!-- 2. كروت الملف الشخصي والأخبار -->
+        <!-- 2. القائمة الجانبية (PLAYER PROFILE & NEWS) -->
         <div class="left-panel">
             <div class="cyber-box profile-box">
                 <h3 class="box-title">PLAYER PROFILE</h3>
@@ -98,29 +101,28 @@
                 </div>
             </div>
 
-            <div class="cyber-box news-box" onclick="openProfile()" style="cursor:pointer;">
+            <div class="cyber-box news-box" onclick="openProfile()">
                 <h3 class="box-title">NEWS & UPDATES</h3>
                 <p class="news-txt">تم إطلاق الموسم الجديد! اضغط للوصول لقائمة الملف الشخصي الكاملة.</p>
             </div>
         </div>
 
-        <!-- 3. الشعار والأزرار الرئيسية -->
-        <div class="center-bottom-layout">
-            <div class="cyber-logo-title">
-                CYBER<br><span>RAGE</span>
-            </div>
+        <!-- 3. الشعار في المنتصف -->
+        <div class="cyber-logo-title">
+            CYBER<br><span>RAGE</span>
+        </div>
 
-            <div class="cyber-main-buttons">
-                <button class="cyber-btn skins-btn" onclick="openSkins()">
-                    <div class="arabic-lbl">الأسكنات</div>
-                    <div class="english-lbl">SKINS</div>
-                </button>
+        <!-- 4. الأزرار السفلى (الأسكنات يساراً وبدء المعركة يميناً) -->
+        <div class="bottom-buttons-container">
+            <button class="cyber-btn skins-btn" onclick="openSkins()">
+                <div class="arabic-lbl">الأسكنات</div>
+                <div class="english-lbl">SKINS</div>
+            </button>
 
-                <button class="cyber-btn battle-btn" onclick="startGame()">
-                    <div class="arabic-lbl">بدء المعركة</div>
-                    <div class="english-lbl">BATTLE</div>
-                </button>
-            </div>
+            <button class="cyber-btn battle-btn" onclick="startGame()">
+                <div class="arabic-lbl">بدء المعركة</div>
+                <div class="english-lbl">BATTLE</div>
+            </button>
         </div>
 
     </div>
@@ -137,7 +139,7 @@
         </div>
 
         <div id="skins-container" class="skins-grid">
-            <!-- يتم توليد السكنات ديناميكياً بواسطة JS -->
+            <!-- عناصر السكنات تظهر هنا -->
         </div>
 
         <button class="btn btn-secondary" style="margin-top: 20px;" onclick="closeSkins()">العودة للقائمة ↩</button>
@@ -192,13 +194,11 @@
 
     <!-- عناصر تحكم لمسية للموبايل -->
     <div id="mobile-ui" style="display: none;">
-        <!-- أزرار الحركة اليسرى -->
         <div class="touch-group" style="display: grid; grid-template-columns: repeat(3, 50px); gap: 5px;">
             <div></div><button class="touch-btn" id="btn-up">▲</button><div></div>
             <button class="touch-btn" id="btn-left">◀</button><button class="touch-btn" id="btn-down">▼</button><button class="touch-btn" id="btn-right">▶</button>
         </div>
 
-        <!-- أزرار الهجوم اليمنى -->
         <div class="touch-group" style="display: flex; gap: 12px; align-items: flex-end;">
             <button class="touch-btn action-btn" id="btn-dash" style="border-color:#00f0ff; color:#00f0ff;">DASH</button>
             <button class="touch-btn action-btn" id="btn-ult">ULT</button>
