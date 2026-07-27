@@ -59,16 +59,70 @@
         <div id="boss-bar-bg"><div id="boss-bar-fill"></div></div>
     </div>
 
-    <!-- الشاشة الرئيسية -->
-    <div id="start-screen" class="overlay">
-        <h1 class="title">CYBER RAGE</h1>
-        <p class="desc">استخدم الأسهم أو حروف WASD للحركة، والماوس للتوجيه وإطلاق النار.<br>اضغط <b>Shift</b> للاندفاع الخاطف (Dash)، و <b>Space</b> لتفعيل الهجوم الخارق (Ultimate)!</p>
+    <!-- الشاشة الرئيسية المضيئة والمتحركة -->
+    <div id="start-screen" class="overlay full-cyber-screen">
         
-        <div class="menu-btn-group">
-            <button class="btn" onclick="startGame()">ابدأ المعركة 🔥</button>
-            <button class="btn btn-secondary" onclick="openSkins()">متجر السكنات 🎨</button>
-            <button class="btn btn-secondary" onclick="openProfile()">الملف الشخصي 👤</button>
+        <!-- طبقات الإضاءة والمدينة الحية -->
+        <div class="city-lights-overlay"></div>
+        <div class="animated-character"></div>
+        
+        <!-- طائرات الدرون مع إطلاق الليزر -->
+        <div class="drone drone-1"><div class="laser-beam"></div></div>
+        <div class="drone drone-2"><div class="laser-beam"></div></div>
+
+        <!-- 1. شريط طاقة أعلى اليسار -->
+        <div class="top-left-hud">
+            <div class="fist-icon">👊</div>
+            <div class="top-energy-bar"><div class="energy-fill"></div></div>
         </div>
+
+        <!-- 2. كروت الملف الشخصي والأخبار -->
+        <div class="left-panel">
+            <div class="cyber-box profile-box">
+                <h3 class="box-title">PLAYER PROFILE</h3>
+                <div class="profile-row">
+                    <span>Username</span>
+                    <span id="menu-player-name" class="cyan-txt">الأسطورة</span>
+                </div>
+                <div class="profile-row">
+                    <span>Level</span>
+                    <span>6</span>
+                </div>
+                <div class="profile-row">
+                    <span>Rank</span>
+                    <span id="menu-player-rank">Rank</span>
+                </div>
+                <div class="profile-row">
+                    <span>Currency</span>
+                    <span id="menu-high-score" class="cyan-txt">0</span>
+                </div>
+            </div>
+
+            <div class="cyber-box news-box" onclick="openProfile()" style="cursor:pointer;">
+                <h3 class="box-title">NEWS & UPDATES</h3>
+                <p class="news-txt">تم إطلاق الموسم الجديد! اضغط للوصول لقائمة الملف الشخصي الكاملة.</p>
+            </div>
+        </div>
+
+        <!-- 3. الشعار والأزرار الرئيسية -->
+        <div class="center-bottom-layout">
+            <div class="cyber-logo-title">
+                CYBER<br><span>RAGE</span>
+            </div>
+
+            <div class="cyber-main-buttons">
+                <button class="cyber-btn skins-btn" onclick="openSkins()">
+                    <div class="arabic-lbl">الأسكنات</div>
+                    <div class="english-lbl">SKINS</div>
+                </button>
+
+                <button class="cyber-btn battle-btn" onclick="startGame()">
+                    <div class="arabic-lbl">بدء المعركة</div>
+                    <div class="english-lbl">BATTLE</div>
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <!-- نافذة السكنات -->
