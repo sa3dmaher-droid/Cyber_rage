@@ -449,6 +449,14 @@ function gameLoop() {
     ctx.fillStyle = bgSkin.color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // إدارة الكومبو والعداد
+    if (comboTimer > 0) {
+        comboTimer--;
+    } else if (combo > 1) {
+        combo = 1;
+        updateHUD();
+    }
+
     let dx = 0, dy = 0;
     if (keys.w) dy -= 1; if (keys.s) dy += 1;
     if (keys.a) dx -= 1; if (keys.d) dx += 1;
@@ -530,6 +538,7 @@ function gameLoop() {
                     createParticles(e.x, e.y, e.color, 10);
                     playSound('explosion');
                     enemies.splice(i, 1);
+                    combo++;
                     score += 10 * combo;
                     userProfile.totalKills++;
                     rage = Math.min(100, rage + 4);
@@ -564,6 +573,7 @@ function gameLoop() {
             if (Math.hypot(b.x - boss.x, b.y - boss.y) < boss.radius) {
                 boss.hp -= 2;
                 bullets.splice(j, 1);
+                updateHUD();
                 if (boss.hp <= 0) {
                     createParticles(boss.x, boss.y, '#ff0055', 50);
                     playSound('ult');
@@ -602,5 +612,5 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// مزامنة البيانات عند التشغيل
+// مزامنة بيانات الواجهة فور التشغيل
 syncStartScreenHUD();
