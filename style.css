@@ -96,7 +96,7 @@ canvas {
 }
 
 /* ==========================================
-   MENU OVERLAYS
+   MENU OVERLAYS & ANIMATED CYBER HUD
    ========================================== */
 .overlay {
     position: absolute;
@@ -111,6 +111,235 @@ canvas {
     padding: 20px;
     pointer-events: auto;
 }
+
+/* الشاشة الرئيسية المطبقة للصورة الحية */
+.full-cyber-screen {
+    position: relative;
+    background: url('1000066334.png') center center / cover no-repeat !important;
+    justify-content: space-between !important;
+    padding: 20px !important;
+    align-items: flex-start !important;
+    overflow: hidden;
+}
+
+/* وميض أضواء المباني في المدينه */
+.city-lights-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 30% 30%, rgba(0, 240, 255, 0.25), transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 85, 0.25), transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+    animation: cityPulse 3s infinite alternate ease-in-out;
+}
+
+@keyframes cityPulse {
+    0% { opacity: 0.3; filter: brightness(0.9); }
+    50% { opacity: 0.85; filter: brightness(1.3); }
+    100% { opacity: 0.4; filter: brightness(1.1); }
+}
+
+/* حركة الشخصية (التقدم للرؤية ثم الرجوع) */
+.animated-character {
+    position: absolute;
+    right: 10%;
+    bottom: 2%;
+    width: 380px;
+    height: 480px;
+    background: url('1000066334.png') right bottom / cover no-repeat;
+    pointer-events: none;
+    z-index: 2;
+    animation: characterMove 4s infinite ease-in-out;
+    opacity: 0.85;
+}
+
+@keyframes characterMove {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+        filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.3));
+    }
+    50% {
+        transform: translate(-18px, -8px) scale(1.03);
+        filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.7));
+    }
+}
+
+/* طائرات الدرون مع إطلاق النار */
+.drone {
+    position: absolute;
+    width: 12px; height: 12px;
+    background: #00f0ff;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #00f0ff;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.drone-1 { top: 22%; left: 45%; animation: droneFly1 5s infinite ease-in-out; }
+.drone-2 { top: 32%; right: 28%; animation: droneFly2 6s infinite ease-in-out; }
+
+@keyframes droneFly1 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -20px); }
+}
+
+@keyframes droneFly2 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-40px, 15px); }
+}
+
+/* أشعة ليزر نارية تتساقط من الطائرات */
+.laser-beam {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 2px; height: 0px;
+    background: linear-gradient(to bottom, #ff0055, transparent);
+    box-shadow: 0 0 10px #ff0055;
+    opacity: 0;
+    transform: rotate(-45deg);
+    transform-origin: top;
+    animation: shootLaser 2.5s infinite;
+}
+
+.drone-2 .laser-beam { animation-delay: 1.2s; }
+
+@keyframes shootLaser {
+    0%, 70% { height: 0px; opacity: 0; }
+    75% { height: 110px; opacity: 1; }
+    85% { height: 170px; opacity: 0.8; }
+    100% { height: 0px; opacity: 0; }
+}
+
+/* عناصر الواجهة العلوية والجانبية HUD */
+.top-left-hud {
+    position: absolute;
+    top: 25px; left: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+}
+
+.fist-icon {
+    width: 45px; height: 45px;
+    background: rgba(0, 240, 255, 0.2);
+    border: 2px solid #00f0ff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 0 15px #00f0ff;
+}
+
+.top-energy-bar {
+    width: 180px; height: 16px;
+    background: rgba(10, 10, 25, 0.8);
+    border: 1px solid #00f0ff;
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.energy-fill {
+    width: 85%; height: 100%;
+    background: linear-gradient(90deg, #ff0055, #00f0ff);
+    border-radius: 6px;
+}
+
+/* القائمة اليسرى (البروفايل والأخبار) */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 65px;
+    width: 240px;
+    z-index: 10;
+}
+
+.cyber-box {
+    background: rgba(5, 15, 30, 0.7);
+    border: 1.5px solid #00f0ff;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3), inset 0 0 10px rgba(0, 240, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px 15px;
+    backdrop-filter: blur(6px);
+}
+
+.box-title {
+    color: #00f0ff;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.4);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.profile-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #ccc;
+    margin-bottom: 6px;
+}
+
+.cyan-txt { color: #00f0ff; font-weight: bold; }
+
+.news-box { height: 110px; }
+.news-txt { font-size: 0.75rem; color: #aaa; line-height: 1.4; }
+
+/* الشعار والأزرار */
+.center-bottom-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    bottom: 25px; left: 0; right: 0;
+    z-index: 10;
+}
+
+.cyber-logo-title {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 0.9;
+    color: #00f0ff;
+    text-shadow: 0 0 15px #00f0ff, 0 0 30px #7000ff;
+    text-align: center;
+    margin-bottom: 25px;
+    font-style: italic;
+    transform: rotate(-3deg);
+}
+.cyber-logo-title span { color: #ff0055; text-shadow: 0 0 15px #ff0055; }
+
+/* أزرار الأسكنات والمعركة */
+.cyber-main-buttons {
+    display: flex;
+    justify-content: space-around;
+    width: 85%;
+    max-width: 800px;
+}
+
+.cyber-btn {
+    background: rgba(5, 15, 30, 0.8);
+    border: 2px solid #00f0ff;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    border-radius: 10px;
+    padding: 10px 35px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    backdrop-filter: blur(4px);
+    min-width: 170px;
+    text-align: center;
+}
+
+.cyber-btn:hover {
+    transform: scale(1.08);
+    background: rgba(0, 240, 255, 0.25);
+    border-color: #ff0055;
+    box-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
+}
+
+.arabic-lbl { font-size: 1.2rem; font-weight: bold; color: #fff; }
+.english-lbl { font-size: 0.85rem; color: #00f0ff; letter-spacing: 2px; }
 
 h1.title {
     font-size: clamp(2.2rem, 5vw, 3.8rem);
